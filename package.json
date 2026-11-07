@@ -1,0 +1,42 @@
+{
+  "name": "ziwei-assistant",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "紫微助手 — 排盘引擎 + v4.0 解读数据集检索的最小可用产品",
+  "workspaces": [
+    "packages/*",
+    "apps/*",
+    "vendor/*"
+  ],
+  "scripts": {
+    "typecheck": "bash scripts/typecheck.sh",
+    "index:build": "tsx packages/reading-index/src/cli.ts",
+    "data:compact": "tsx packages/reading-index/src/compact-cli.ts",
+    "chart": "tsx apps/cli/src/index.ts",
+    "test": "tsx tests/run.ts",
+    "web:dev": "npm run dev --workspace @ziwei/web",
+    "web:build": "npm run build --workspace @ziwei/web",
+    "acceptance": "bash scripts/acceptance.sh",
+    "citation:selftest": "tsx packages/citation-guard/src/selftest.ts",
+    "docker:build": "docker build -f deploy/Dockerfile -t ziwei-assistant:latest .",
+    "docker:up": "docker compose -f deploy/docker-compose.yml up -d",
+    "docker:down": "docker compose -f deploy/docker-compose.yml down",
+    "docker:logs": "docker compose -f deploy/docker-compose.yml logs -f ziwei",
+    "ask:selftest": "tsx packages/ask/src/__selftest.ts",
+    "ask:typecheck": "tsc --noEmit -p packages/ask/tsconfig.json"
+  },
+  "devDependencies": {
+    "@types/node": "^22.20.5",
+    "@ziwei/ask": "workspace:*",
+    "@ziwei/chart-engine": "workspace:*",
+    "@ziwei/citation-guard": "workspace:*",
+    "@ziwei/core": "workspace:*",
+    "@ziwei/reading-index": "workspace:*",
+    "tsx": "^4.19.0",
+    "typescript": "^5"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

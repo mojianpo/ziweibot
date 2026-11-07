@@ -1,0 +1,19 @@
+{
+  "extends": "../tsconfig.base.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "types": ["node"],
+    "allowImportingTsExtensions": true,
+    "paths": {
+      "@ziwei/chart-engine": ["../packages/chart-engine/src/index.ts"],
+      "@ziwei/chart-engine/engine/lunar-solar.ts": ["../packages/chart-engine/src/engine/lunar-solar.ts"],
+      "@ziwei/core": ["../packages/core/src/index.ts"],
+      "@ziwei/reading-index": ["../packages/reading-index/src/index.ts"]
+    }
+  },
+  "include": [
+    "**/*.ts",
+    "../packages/chart-engine/src/engine/lunar-javascript.d.ts"
+  ],
+  "exclude": ["node_modules"]
+}

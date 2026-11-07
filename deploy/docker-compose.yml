@@ -1,0 +1,89 @@
+# 紫微助手 —— 单机 Docker 编排
+#
+#   docker compose -f deploy/docker-compose.yml up -d
+#
+# 数据集不在镜像里（解压后 53GB），必须挂载到 /app/data。
+# 首次部署前请先看 deploy/README.md 的「数据准备」一节。
+
+# 项目名（决定默认网络名 ziwei_default），显式写死避免随目录名漂移
+name: ziwei
+
+services:
+  ziwei:
+    build:
+      # 上下文是仓库根（Dockerfile 在 deploy/ 下）
+      context: ..
+      dockerfile: deploy/Dockerfile
+    image: ziwei-assistant:latest
+    container_name: ziwei-assistant
+    restart: unless-stopped
+
+    ports:
+      # 宿主机端口可改：ZIWEI_PORT=8080（写在 deploy/.env 里）
+      # 容器内固定 3000（镜像里的 PORT 环境变量）
+      - "${ZIWEI_PORT:-3000}:3000"
+
+    environment:
+      # 数据目录（绝对路径）—— 解读数据集检索全靠它
+      ZIWEI_DATA_DIR: /app/data
+
+      # 运行状态目录（账户 / 会话 / 订单 / 每日额度计数）
+      # 必须落在 volume 里，否则重建容器会丢账户与流量包余额
+      ZIWEI_STATE_DIR: /app/state
+
+      # ── 追问 provider（可选）─────────────────────────────────
+      # 全部留空 = 不接任何模型 API：追问面板会明确提示「未配置 provider」，
+      # 排盘与 13 维解读（数据集检索）完全不受影响，也不会联网。
+      # 真实值写在 deploy/.env 里，镜像与仓库里都不放密钥。
+      ZIWEI_ASK_PROVIDER: "${ZIWEI_ASK_PROVIDER:-}"
+      ZIWEI_ASK_BASE_URL: "${ZIWEI_ASK_BASE_URL:-}"
+      ZIWEI_ASK_API_KEY: "${ZIWEI_ASK_API_KEY:-}"
+      ZIWEI_ASK_MODEL: "${ZIWEI_ASK_MODEL:-}"
+      ZIWEI_ASK_MAX_TOKENS: "${ZIWEI_ASK_MAX_TOKENS:-8000}"
+      # 流式「空闲」超时：模型连续这么久没吐新字才断开（不是总时长上限）
+      ZIWEI_ASK_TIMEOUT_MS: "${ZIWEI_ASK_TIMEOUT_MS:-}"
+
+      # ── 登录验证码邮件（Resend）──────────────────────────────
+      # 不配 = 生产环境登录发码直接报「邮件服务未配置」（明确报错，不静默）。
+      # 本地开发不用配：调试模式把验证码直接显示在页面上。
+      ZIWEI_RESEND_API_KEY: "${ZIWEI_RESEND_API_KEY:-}"
+      ZIWEI_RESEND_FROM: "${ZIWEI_RESEND_FROM:-}"
+
+      # ── 真实支付（支付宝当面付）────────────────────────────────
+      # 三项都配了才开支付；不配 = 流量包购买明确报「支付未配置」。
+      # 沙箱联调把 ZIWEI_ALIPAY_GATEWAY 换成
+      # https://openapi-sandbox.dl.alipaydev.com/gateway.do
+      ZIWEI_ALIPAY_APP_ID: "${ZIWEI_ALIPAY_APP_ID:-}"
+      ZIWEI_ALIPAY_PRIVATE_KEY: "${ZIWEI_ALIPAY_PRIVATE_KEY:-}"
+      ZIWEI_ALIPAY_PUBLIC_KEY: "${ZIWEI_ALIPAY_PUBLIC_KEY:-}"
+      ZIWEI_ALIPAY_GATEWAY: "${ZIWEI_ALIPAY_GATEWAY:-}"
+
+      # ── VIP 白名单（不限量 / 每日定额）──────────────────────────
+      ZIWEI_VIP_EMAILS: "${ZIWEI_VIP_EMAILS:-}"
+      ZIWEI_VIP_IPS: "${ZIWEI_VIP_IPS:-}"
+      ZIWEI_VIP_DAILY_LIMIT: "${ZIWEI_VIP_DAILY_LIMIT:-}"
+
+    volumes:
+      # 解读数据集：压缩包 164MB / 解压 53GB / 索引 15MB
+      - ziwei-data:/app/data
+      # 运行状态：账户 / 会话 / 订单 / 每日额度计数（重建容器不丢）
+      - ziwei-state:/app/state
+
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://127.0.0.1:3000/ >/dev/null || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 40s
+
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+volumes:
+  ziwei-data:
+    name: ziwei-data
+  ziwei-state:
+    name: ziwei-state
