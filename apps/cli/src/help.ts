@@ -5,7 +5,7 @@
  */
 
 export function helpText(): string {
-  return `紫微助手 CLI —— 排盘 + 13 维解读 + 命盘追问
+  return `紫微BOT CLI —— 排盘 + 13 维解读 + 命盘追问
 
 最常用的三条：
   ziwei chart --date 1990-01-01 --hour 0 --gender male     只看命盘（12 宫）

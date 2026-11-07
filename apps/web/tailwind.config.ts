@@ -19,34 +19,34 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        // 宣纸底 —— 明亮国风：米白纸面、炭黑正文、靛青主色、朱砂只做四化点睛
-        paper: '#F6F2E9',
-        surface: '#FDFBF5',
-        'surface-2': '#EFE9DA', // 抬一层：详情 sheet、Ask 气泡
-        line: '#DDD4C0',
-        lineSoft: '#E9E2D1',
+        // 冷白底与雾面板：深海蓝文字、蓝绿主色、低对比边框
+        paper: '#F1F6F8',
+        surface: '#FBFEFF',
+        'surface-2': '#E8F1F5',
+        line: '#C7D9E1',
+        lineSoft: '#DFEBEF',
         ink: {
-          DEFAULT: '#2E2A23',
-          2: '#6E6656',
-          3: '#A2987F',
+          DEFAULT: '#102B3A',
+          2: '#496575',
+          3: '#66818E',
         },
         zhu: {
-          DEFAULT: '#3D5A85', // 黛青主色：选中、焦点、链接
-          soft: '#E7ECF3',
-          deep: '#2F4869',
-          glow: 'rgba(61, 90, 133, 0.22)', // 选宫呼吸光
+          DEFAULT: '#0A7194',
+          soft: '#DCF0F5',
+          deep: '#064F6C',
+          glow: 'rgba(10, 113, 148, 0.22)',
         },
         hua: {
-          lu: '#3E8A58', // 化禄 · 绿
-          quan: '#7C5FB8', // 化权 · 紫
-          ke: '#3868B0', // 化科 · 蓝
-          ji: '#C1402F', // 化忌 · 朱砂
+          lu: '#167965',
+          quan: '#675AA8',
+          ke: '#176D9F',
+          ji: '#B34155',
         },
         star: {
-          miao: '#A8792F', // 庙旺主星 · 鎏金
-          xian: '#8D8574', // 落陷主星
+          miao: '#926324',
+          xian: '#657B87',
         },
-        danger: '#C1402F',
+        danger: '#B34155',
       },
       fontFamily: {
         sans: [

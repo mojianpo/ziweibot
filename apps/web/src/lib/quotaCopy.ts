@@ -127,9 +127,9 @@ export interface QuotaCopy {
 }
 
 const ZH: QuotaCopy = {
-  dailyNote: (n) => `（本站免费提供 · 每天 ${n} 次）`,
+  dailyNote: (n) => n === -1 ? '（本站免费提供 · 不限次）' : `（本站免费提供 · 每天 ${n} 次）`,
   statusBuiltin: (model, n) =>
-    n >= 1000
+    n === -1 || n >= 1000
       ? `当前 AI：${model}（本站免费提供 · 不限次）`
       : `当前 AI：${model}（本站免费提供 · 每天 ${n} 次）`,
   statusVip: (model, n) =>
@@ -139,7 +139,7 @@ const ZH: QuotaCopy = {
   statusUser: (model) => `当前 AI：${model}（你的 Key · 不限量）`,
   statusHint: '—— 右上角 ⚙ 可换成自己的 Key。',
   statusHintUser: '—— 右上角 ⚙ 可更换或测试。',
-  activeBuiltin: (model, n) => `当前 AI：${model}（本站免费提供 · 每天 ${n} 次）`,
+  activeBuiltin: (model, n) => n === -1 ? `当前 AI：${model}（本站免费提供 · 不限次）` : `当前 AI：${model}（本站免费提供 · 每天 ${n} 次）`,
   activeUser: (model) => `当前 AI：${model}（你的 Key · 不限量）`,
   wallTitle: '今天的免费追问额度用完了',
   wallBody: (n, scope) =>
@@ -180,9 +180,9 @@ const ZH: QuotaCopy = {
   sendFailed: '验证码发送失败，请稍后重试。',
   loginError: '验证码无效或已过期，请重新获取。',
   loginOk: '登录成功。',
-  accountTitle: '我的额度',
+  accountTitle: '我的账号',
   accountEmail: '登录邮箱',
-  accountFree: (r, l) => (l >= 1000 ? '今日免费不限次' : `今日免费剩余 ${r} / ${l} 次`),
+  accountFree: (r, l) => (l === -1 || l >= 1000 ? '今日免费不限次' : `今日免费剩余 ${r} / ${l} 次`),
   accountFreeLabel: '免费额度',
   accountPack: (n) => `流量包余额 ${n} 次`,
   accountPackLabel: '流量包',
@@ -192,13 +192,13 @@ const ZH: QuotaCopy = {
   orderStatus: (s) =>
     s === 'paid' ? '✓ 已支付' : s === 'pending' ? '待支付' : s === 'closed' ? '已关闭' : '意向（未收款）',
   logout: '退出登录',
-  navAccount: '我的额度',
+  navAccount: '我的账号',
 };
 
 const EN: QuotaCopy = {
-  dailyNote: (n) => `(free on-site AI · ${n} per day)`,
+  dailyNote: (n) => n === -1 ? '(free on-site AI · unlimited)' : `(free on-site AI · ${n} per day)`,
   statusBuiltin: (model, n) =>
-    n >= 1000
+    n === -1 || n >= 1000
       ? `Current AI: ${model} (free on-site AI · unlimited)`
       : `Current AI: ${model} (free on-site AI · ${n} per day)`,
   statusVip: (model, n) =>
@@ -206,7 +206,7 @@ const EN: QuotaCopy = {
   statusUser: (model) => `Current AI: ${model} (your key · unlimited)`,
   statusHint: '— switch to your own key via ⚙, top right.',
   statusHintUser: '— replace or test it via ⚙, top right.',
-  activeBuiltin: (model, n) => `Current AI: ${model} (free on-site AI · ${n} per day)`,
+  activeBuiltin: (model, n) => n === -1 ? `Current AI: ${model} (free on-site AI · unlimited)` : `Current AI: ${model} (free on-site AI · ${n} per day)`,
   activeUser: (model) => `Current AI: ${model} (your key · unlimited)`,
   wallTitle: "You've used today's free follow-ups",
   wallBody: (n, scope) =>
@@ -247,9 +247,9 @@ const EN: QuotaCopy = {
   sendFailed: 'Failed to send the code. Please try again later.',
   loginError: 'That code is invalid or expired. Request a new one.',
   loginOk: 'Signed in.',
-  accountTitle: 'My quota',
+  accountTitle: 'My account',
   accountEmail: 'Signed in as',
-  accountFree: (r, l) => (l >= 1000 ? 'Unlimited free follow-ups today' : `Free follow-ups left today: ${r} / ${l}`),
+  accountFree: (r, l) => (l === -1 || l >= 1000 ? 'Unlimited free follow-ups today' : `Free follow-ups left today: ${r} / ${l}`),
   accountFreeLabel: 'Free quota',
   accountPack: (n) => `Traffic pack balance: ${n}`,
   accountPackLabel: 'Traffic pack',
@@ -259,7 +259,7 @@ const EN: QuotaCopy = {
   orderStatus: (s) =>
     s === 'paid' ? '✓ Paid' : s === 'pending' ? 'Pending' : s === 'closed' ? 'Closed' : 'Intent (no charge)',
   logout: 'Sign out',
-  navAccount: 'My quota',
+  navAccount: 'My account',
 };
 
 export const QUOTA_COPY: Record<Lang, QuotaCopy> = { zh: ZH, en: EN };

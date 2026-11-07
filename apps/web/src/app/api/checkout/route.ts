@@ -43,7 +43,7 @@ export async function POST(request: Request) {
   const pre = await alipayPrecreate({
     outTradeNo: order.id,
     totalAmount: pack.priceCny.toFixed(2),
-    subject: `紫微助手流量包 ${pack.asks} 次`,
+    subject: `紫微BOT流量包 ${pack.asks} 次`,
   });
   if (!pre.ok) {
     return Response.json({ ok: false, error: 'PRECREATE_FAILED', detail: pre.error }, { status: 502 });

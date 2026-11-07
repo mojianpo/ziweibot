@@ -27,6 +27,7 @@ if (dataDir && !process.env.ZIWEI_DATA_DIR) {
 }
 
 const nextConfig: NextConfig = {
+  devIndicators: false,
   // 三个 workspace 包都是 TS 源码，必须交给 Next 一起转译
   transpilePackages: ['@ziwei/core', '@ziwei/chart-engine', '@ziwei/reading-index'],
   // monorepo：把产物追踪根指向仓库根，避免 .next 找不到 workspace 依赖

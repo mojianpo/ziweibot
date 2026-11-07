@@ -1,4 +1,4 @@
-# 紫微助手 · 设计改造说明书（HOW TO CHANGE）
+# 紫微BOT · 设计改造说明书（HOW TO CHANGE）
 
 > 给实现者，不是给评审。每条都能落到文件 / token / class。  
 > 基线：`ux/iter-1` @ `a5945db9741c7c11d951f36b8511a737ddf297c3`（`ux(iter-18): 夜空星图深色主题，盘面一屏自适应`）  

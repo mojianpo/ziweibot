@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# 紫微助手 MVP 总体验收
+# 紫微BOT MVP 总体验收
 #
 #   scripts/acceptance.sh
 #

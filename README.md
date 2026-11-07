@@ -1,4 +1,4 @@
-# 紫微助手（ziwei-assistant）
+# 紫微BOT（ziwei-assistant）
 
 > 输入生辰 → 确定性排盘 → 12 宫命盘与 13 维解读 → 命盘本地存档、基于命盘的多轮追问。
 
@@ -105,7 +105,7 @@ CLI / 脚本则直接用环境变量（同名变量，见 `deploy/.env.example`�
 上限可用环境变量覆盖：
 
 ```bash
-ZIWEI_ASK_DAILY_LIMIT=3   # 默认 3
+ZIWEI_ASK_DAILY_LIMIT=3   # 默认 3；设为 -1 表示不限次
 ```
 
 - 计数口径：请求成功产出回答才扣次；失败/中断不扣。

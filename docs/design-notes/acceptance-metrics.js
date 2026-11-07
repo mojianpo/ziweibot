@@ -1,4 +1,4 @@
-// 紫微助手 · 设计改造验收指标（Day 7 回归用）
+// 紫微BOT · 设计改造验收指标（Day 7 回归用）
 //
 // 用法：在浏览器控制台 / Playwright evaluate 里执行，返回一行 JSON。
 // 对应 docs/DESIGN-HOWTO-CHANGE.md §D 的验收总表。

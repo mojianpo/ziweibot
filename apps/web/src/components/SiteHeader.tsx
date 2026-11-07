@@ -23,12 +23,12 @@ export function SiteHeader() {
           href="/"
           className="group flex shrink-0 items-center gap-2 rounded-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zhu"
         >
-          <ZiweiMark className="h-[18px] w-[18px] shrink-0 text-zhu drop-shadow-[0_0_7px_rgba(61,90,133,0.35)] transition-transform duration-300 group-hover:rotate-12" />
-          <span className="whitespace-nowrap font-serif text-[15px] font-semibold tracking-[0.16em] text-ink">
-            紫微助手
+          <ZiweiMark className="h-[18px] w-[18px] shrink-0 text-zhu drop-shadow-[0_0_8px_rgba(10,113,148,0.28)] transition-transform duration-300 group-hover:rotate-12" />
+          <span className="whitespace-nowrap font-sans text-[15px] font-semibold tracking-[0.16em] text-ink">
+            紫微BOT
           </span>
           <span className="hidden text-[10px] tracking-[0.3em] text-ink-3/70 sm:inline">
-            ZIWEI ASSISTANT
+            ZIWEI BOT
           </span>
         </Link>
         <NavLinks />

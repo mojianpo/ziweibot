@@ -6,16 +6,16 @@ import { describeProviderEnv, readProviderEnv } from '@ziwei/ask';
 
 export const metadata: Metadata = {
   title: {
-    default: '紫微助手 — 紫微斗数排盘与解读',
-    template: '%s · 紫微助手',
+    default: '紫微BOT — 紫微斗数排盘与解读',
+    template: '%s · 紫微BOT',
   },
   description:
     '输入公历生辰与时辰，即刻排出十二宫命盘，并给出 13 维解读。排盘由确定性引擎完成，解读来自紫微斗数开源解读数据集。',
-  applicationName: '紫微助手',
+  applicationName: '紫微BOT',
   keywords: ['紫微斗数', '排盘', '命盘', '十三维解读', '开源数据集'],
-  authors: [{ name: '紫微助手' }],
+  authors: [{ name: '紫微BOT' }],
   openGraph: {
-    title: '紫微助手 — 紫微斗数排盘与解读',
+    title: '紫微BOT — 紫微斗数排盘与解读',
     description:
       '确定性排盘 + 数据集原文检索。未覆盖生辰如实提示，不做补写。',
     locale: 'zh_CN',
@@ -23,7 +23,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary',
-    title: '紫微助手 — 紫微斗数排盘与解读',
+    title: '紫微BOT — 紫微斗数排盘与解读',
     description: '确定性排盘 + 数据集原文检索，不做模型补写。',
   },
   robots: {
@@ -36,7 +36,7 @@ export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
   viewportFit: 'cover',
-  themeColor: '#F6F2E9',
+  themeColor: '#F1F6F8',
   colorScheme: 'light',
 };
 

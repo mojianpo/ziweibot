@@ -35,7 +35,7 @@ export default async function AboutPage() {
           关于与口径
         </h1>
         <p className="mt-4 text-[15px] leading-[1.9] text-ink-2">
-          紫微助手把公历生辰排成十二宫命盘，并检索对应的十三维解读。
+          紫微BOT把公历生辰排成十二宫命盘，并检索对应的十三维解读。
           排盘是确定性计算，解读是数据集原文检索——两个环节都不经过大模型推算。
         </p>
       </header>
@@ -112,62 +112,12 @@ export default async function AboutPage() {
           </ol>
         </Section>
 
-        <Section title="界面实现说明">
-          <p>
-            十二宫格盘面的四四方阵布局参考了上游 MIT 项目
-            <span className="mx-1 font-mono text-[13px] text-ink">
-              components/ChartBoard.tsx
-            </span>
-            与
-            <span className="mx-1 font-mono text-[13px] text-ink">
-              components/PalaceCell.tsx
-            </span>{' '}
-            的结构思路，视觉实现与交互为本项目重写。参考代码保留在
-            <span className="mx-1 font-mono text-[13px] text-ink">
-              vendor/upstream-reference/
-            </span>
-            ，许可证见同目录 LICENSE。
-          </p>
-          <p>
-            解读正文的排版使用本项目自带的轻量 Markdown 渲染器，只覆盖数据集里实际出现的
-            构造（小标题、加粗、斜体、列表、引用、分隔线），不引入完整 Markdown 依赖。
-          </p>
-        </Section>
 
-        <Section title="署名与许可">
-          <p className="text-ink-2">
-            本项目使用了「紫微斗数开源解读数据集 v4.0」（674,976 张命盘 × 13 维）
-            以及开源排盘引擎。
-          </p>
-          <p className="text-ink-2">
-            来源：
-            <a
-              href="https://github.com/Renhuai123/ziwei-doushu"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-zhu underline underline-offset-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zhu"
-            >
-              https://github.com/Renhuai123/ziwei-doushu
-            </a>
-          </p>
-          <p className="text-ink-2">作者：王多鱼AI</p>
-          <p className="text-ink-2">数据集许可：CC BY 4.0；引擎代码：MIT。</p>
-          <p className="text-ink-2">{DISCLAIMER}</p>
-          <p className="text-ink-3">
-            倪海厦《天纪》原话不在数据集的 CC BY 4.0 覆盖范围内，不得批量商用；
-            数据集已排除该部分内容。
-          </p>
-        </Section>
+
+
       </div>
 
-      <div className="mt-12">
-        <Link
-          href="/new"
-          className="inline-flex items-center rounded-lg bg-zhu px-5 py-2.5 text-sm text-white transition-colors hover:bg-zhu-deep focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
-        >
-          去排一张盘
-        </Link>
-      </div>
+
     </div>
   );
 }

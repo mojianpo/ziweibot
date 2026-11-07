@@ -12,7 +12,7 @@
 
 import { performance } from 'node:perf_hooks';
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 
 import { Tester, describeError, type SuiteFn } from './harness';
 
@@ -50,7 +50,7 @@ async function runFile(file: string): Promise<FileResult> {
   const tester = new Tester(file);
 
   try {
-    const mod = (await import(path.join(REPO_ROOT, file))) as {
+    const mod = (await import(pathToFileURL(path.join(REPO_ROOT, file)).href)) as {
       suite?: SuiteFn;
       default?: SuiteFn;
     };
@@ -67,7 +67,7 @@ async function runFile(file: string): Promise<FileResult> {
 async function main(): Promise<void> {
   const started = performance.now();
 
-  console.log('紫微助手 · 回归测试套件');
+  console.log('紫微BOT · 回归测试套件');
   console.log('='.repeat(68));
 
   const results: FileResult[] = [];

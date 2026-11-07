@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "紫微助手 — 排盘引擎 + v4.0 解读数据集检索的最小可用产品",
+  "description": "紫微BOT — 排盘引擎 + v4.0 解读数据集检索的最小可用产品",
   "workspaces": [
     "packages/*",
     "apps/*",
@@ -11,6 +11,7 @@
   ],
   "scripts": {
     "typecheck": "bash scripts/typecheck.sh",
+    "typecheck:win": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/typecheck.ps1",
     "index:build": "tsx packages/reading-index/src/cli.ts",
     "data:compact": "tsx packages/reading-index/src/compact-cli.ts",
     "chart": "tsx apps/cli/src/index.ts",
@@ -18,6 +19,8 @@
     "web:dev": "npm run dev --workspace @ziwei/web",
     "web:build": "npm run build --workspace @ziwei/web",
     "acceptance": "bash scripts/acceptance.sh",
+    "acceptance:win": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/acceptance.ps1",
+    "data:download:win": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/download_data.ps1",
     "citation:selftest": "tsx packages/citation-guard/src/selftest.ts",
     "docker:build": "docker build -f deploy/Dockerfile -t ziwei-assistant:latest .",
     "docker:up": "docker compose -f deploy/docker-compose.yml up -d",

@@ -37,7 +37,7 @@ export function mailConfigured(): boolean {
  */
 export async function sendOtpEmail(email: string, code: string): Promise<SendResult> {
   const key = process.env.ZIWEI_RESEND_API_KEY?.trim();
-  const from = process.env.ZIWEI_RESEND_FROM?.trim() || '紫微助手 <onboarding@resend.dev>';
+  const from = process.env.ZIWEI_RESEND_FROM?.trim() || '紫微BOT <onboarding@resend.dev>';
 
   if (!key) {
     if (debugMode()) {
@@ -57,7 +57,7 @@ export async function sendOtpEmail(email: string, code: string): Promise<SendRes
       body: JSON.stringify({
         from,
         to: [email],
-        subject: '紫微助手登录验证码',
+        subject: '紫微BOT登录验证码',
         text: `你的验证码是 ${code}，10 分钟内有效。如果不是你自己操作，忽略这封信。`,
       }),
     });

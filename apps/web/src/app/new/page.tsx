@@ -9,7 +9,7 @@ export default function NewProfilePage() {
 
   return (
     <div className="mx-auto w-full max-w-6xl px-5 py-8 sm:px-8 sm:py-12">
-      <h1 className="mb-6 font-serif text-[1.45rem] leading-snug text-ink sm:text-[1.6rem]">
+      <h1 className="mb-6 font-sans text-[1.45rem] font-semibold leading-snug tracking-[0.04em] text-ink sm:text-[1.6rem]">
         排一张新盘
       </h1>
 

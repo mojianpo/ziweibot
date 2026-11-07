@@ -367,7 +367,7 @@ export function dailyLimit(): number {
 }
 
 /** 扣次来源 —— 退款时按来源还回去 */
-export type ChargeKind = 'free' | 'pack';
+export type ChargeKind = 'free' | 'pack' | 'unlimited';
 
 export interface ChargeResult {
   ok: true;
@@ -390,6 +390,14 @@ export interface ChargeDenied {
  */
 export function chargeUserAsk(userId: string): ChargeResult | ChargeDenied {
   const limit = dailyLimit();
+  if (limit === -1) {
+    return {
+      ok: true,
+      kind: 'unlimited',
+      freeRemaining: -1,
+      packRemaining: getUserById(userId)?.packBalance ?? 0,
+    };
+  }
   const bucket = bucketUser(userId);
 
   // 先免费日额（bump 内部判定到限即返回 null）
@@ -420,6 +428,7 @@ export function chargeUserAsk(userId: string): ChargeResult | ChargeDenied {
 
 /** 退还一次扣次（按来源还） */
 export function refundUserAsk(userId: string, kind: ChargeKind): void {
+  if (kind === 'unlimited') return;
   if (kind === 'free') {
     refundBucket(bucketUser(userId));
     return;
@@ -439,7 +448,7 @@ export function accountQuota(userId: string): {
   return {
     limit,
     used,
-    remaining: Math.max(0, limit - used),
+    remaining: limit === -1 ? -1 : Math.max(0, limit - used),
     packBalance: getUserById(userId)?.packBalance ?? 0,
   };
 }

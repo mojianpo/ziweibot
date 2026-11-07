@@ -1,4 +1,4 @@
-# 紫微助手 —— 单机 Docker 编排
+# 紫微BOT —— 单机 Docker 编排
 #
 #   docker compose -f deploy/docker-compose.yml up -d
 #
@@ -40,6 +40,7 @@ services:
       ZIWEI_ASK_API_KEY: "${ZIWEI_ASK_API_KEY:-}"
       ZIWEI_ASK_MODEL: "${ZIWEI_ASK_MODEL:-}"
       ZIWEI_ASK_MAX_TOKENS: "${ZIWEI_ASK_MAX_TOKENS:-8000}"
+      ZIWEI_ASK_DAILY_LIMIT: "${ZIWEI_ASK_DAILY_LIMIT:-3}"
       # 流式「空闲」超时：模型连续这么久没吐新字才断开（不是总时长上限）
       ZIWEI_ASK_TIMEOUT_MS: "${ZIWEI_ASK_TIMEOUT_MS:-}"
 

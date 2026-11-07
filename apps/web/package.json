@@ -2,7 +2,7 @@
   "name": "@ziwei/web",
   "version": "0.1.0",
   "private": true,
-  "description": "紫微助手 Web 界面 —— 排盘 + 13 维解读",
+  "description": "紫微BOT Web 界面 —— 排盘 + 13 维解读",
   "scripts": {
     "dev": "next dev",
     "build": "next build",

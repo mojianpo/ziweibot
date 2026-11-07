@@ -1,6 +1,6 @@
 #!/usr/bin/env tsx
 /**
- * 紫微助手 CLI —— 入口。
+ * 紫微BOT CLI —— 入口。
  *
  * 业务逻辑一律走 `@ziwei/core`（排盘 + 解读检索）；
  * 只有「钟点 → 排盘日 + 时辰序号」的输入层换算走 `@ziwei/chart-engine`

@@ -75,7 +75,8 @@ export const suite = async (t: Tester): Promise<void> => {
     assert.equal(resolveDailyLimit(' 5 '), 5);
     assert.equal(resolveDailyLimit('2.7'), 2);
     assert.equal(resolveDailyLimit('0'), DAILY_LIMIT);
-    assert.equal(resolveDailyLimit('-1'), DAILY_LIMIT);
+    assert.equal(resolveDailyLimit('-1'), -1);
+    assert.equal(resolveDailyLimit('-2'), DAILY_LIMIT);
     assert.equal(resolveDailyLimit('abc'), DAILY_LIMIT);
   });
 

@@ -104,6 +104,7 @@ export function reserveFor(subject: QuotaSubject): Reservation | Denied {
   }
 
   const limit = dailyLimit();
+  if (limit === -1) return { ok: true, refund: () => {} };
   const day = utcDay();
   const r = bump(bucketIp(subject.ip), day, limit);
   if (!r) return { ok: false, limit };
@@ -136,6 +137,9 @@ export function snapshotFor(subject: QuotaSubject): {
   const limit = dailyLimit();
   if (subject.kind === 'user') {
     return { ...accountQuota(subject.userId), vip: false };
+  }
+  if (limit === -1) {
+    return { limit, used: 0, remaining: -1, packBalance: 0, vip: false };
   }
   const used = usedIn(bucketIp(subject.ip));
   return {

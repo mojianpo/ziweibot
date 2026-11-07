@@ -97,7 +97,7 @@ const chart = svc.chart(BIRTH);
 const reading = svc.reading(BIRTH);
 const summary = svc.summary(BIRTH);
 
-console.log('紫微助手 · @ziwei/ask 单元自测');
+console.log('紫微BOT · @ziwei/ask 单元自测');
 console.log(
   `生辰：${BIRTH.year}-${BIRTH.month}-${BIRTH.day} 时辰${BIRTH.hour} ${BIRTH.gender}`,
 );

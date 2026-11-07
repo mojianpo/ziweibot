@@ -22,7 +22,7 @@ export function SiteFooter() {
     return (
       <footer className="mt-4 border-t border-line bg-surface pb-[env(safe-area-inset-bottom)] print:hidden">
         <div className="mx-auto flex w-full max-w-6xl flex-wrap items-center gap-x-3 gap-y-1 px-5 py-3 text-2xs leading-relaxed text-ink-3 sm:px-8">
-          <span className="shrink-0">紫微助手</span>
+          <span className="shrink-0">紫微BOT</span>
           <span aria-hidden="true">·</span>
           <Link href="/about" className={linkClass}>
             口径说明
@@ -92,7 +92,7 @@ export function SiteFooter() {
             >
               数据集 GitHub
             </a>
-            <span className="md:mt-2 md:text-ink-3">紫微助手</span>
+            <span className="md:mt-2 md:text-ink-3">紫微BOT</span>
           </div>
         </div>
       </div>

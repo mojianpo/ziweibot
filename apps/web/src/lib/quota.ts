@@ -10,9 +10,10 @@
 /** 默认每日免费追问次数 */
 export const DAILY_LIMIT = 3;
 
-/** 环境变量 ZIWEI_ASK_DAILY_LIMIT → 实际生效的每日次数；非法/缺省回落默认 */
+/** 环境变量 ZIWEI_ASK_DAILY_LIMIT → 每日次数；-1 不限次，其他非法值回落默认 */
 export function resolveDailyLimit(raw?: string): number {
   const n = Number((raw ?? '').trim());
+  if (n === -1) return -1;
   return Number.isFinite(n) && n > 0 ? Math.floor(n) : DAILY_LIMIT;
 }
 
