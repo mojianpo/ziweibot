@@ -28,6 +28,9 @@ if (dataDir && !process.env.ZIWEI_DATA_DIR) {
 
 const nextConfig: NextConfig = {
   basePath: '/ziweibot',
+  async redirects() {
+    return [{ source: '/ziweibot/account', destination: '/account', permanent: false }];
+  },
   devIndicators: false,
   // 三个 workspace 包都是 TS 源码，必须交给 Next 一起转译
   transpilePackages: ['@ziwei/core', '@ziwei/chart-engine', '@ziwei/reading-index'],

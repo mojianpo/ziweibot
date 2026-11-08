@@ -40,7 +40,7 @@ export default async function ReportPage({
 }: {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
-  if (!await currentUser()) redirect('/ziweibot/account');
+  if (!await currentUser()) redirect('/account');
   const sp = await searchParams;
   const year = Number(one(sp.y));
   const month = Number(one(sp.m));

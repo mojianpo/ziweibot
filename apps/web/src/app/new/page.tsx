@@ -7,7 +7,7 @@ import { currentUser } from '@/lib/session';
 export const dynamic = 'force-dynamic';
 
 export default async function NewProfilePage() {
-  if (!await currentUser()) redirect('/ziweibot/account');
+  if (!await currentUser()) redirect('/account');
   const years = getService().coverage().indexedYears;
 
   return (

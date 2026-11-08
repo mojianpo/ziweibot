@@ -6,6 +6,7 @@ import { SI_HUA_TABLE } from '@ziwei/chart-engine';
 import type { ChartJSON } from '@ziwei/chart-engine';
 import { SHICHEN_NAMES } from '@/lib/birth';
 import SynastryForm from '@/components/SynastryForm';
+import SynastryInterpretation from '@/components/SynastryInterpretation';
 
 export const dynamic = 'force-dynamic';
 export const metadata = { title: '双人合盘' };
@@ -46,7 +47,7 @@ export default async function SynastryPage({
 }: {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
-  if (!await currentUser()) redirect('/ziweibot/account');
+  if (!await currentUser()) redirect('/account');
   const sp = await searchParams;
   const a = readPerson(sp, 'a');
   const b = readPerson(sp, 'b');
@@ -171,8 +172,10 @@ export default async function SynastryPage({
         ))}
       </section>
 
+      <SynastryInterpretation a={a} b={b} />
+
       <p className="border-t border-lineSoft pt-4 text-2xs leading-relaxed text-ink-3">
-        互飞四化是确定性的盘面事实（一方的生年四化星确实落在对方某宫）。合盘的吉凶解读不在数据集覆盖范围内，这里不做断语。各人本命的详细解读请看各自的{' '}
+        互飞四化是确定性的盘面事实（一方的生年四化星确实落在对方某宫）。上方大模型文字是基于这些事实的通俗说明，不属于数据集原文，也不作吉凶断语。各人本命的详细解读请看各自的{' '}
         <Link href="/" className="underline underline-offset-2 hover:text-zhu">命盘对话</Link>。仅供文化兴趣与学习参考。
       </p>
     </div>

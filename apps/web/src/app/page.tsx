@@ -20,7 +20,7 @@ export default async function HomePage({
 }: {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
-  if (!await currentUser()) redirect('/ziweibot/account');
+  if (!await currentUser()) redirect('/account');
   const sp = await searchParams;
   const errorKey = typeof sp.error === 'string' ? sp.error : '';
   const errorText = ERROR_TEXT[errorKey];
