@@ -34,6 +34,8 @@ npm run data:compact -- --all  # 压成 compact 形态：1.5GB（替代 53GB raw
 ```
 # ④ 起服务
 npm run web:dev        # http://localhost:3000
+
+nohup npm run web:dev > web-dev.log 2>&1 & echo $!
 ---
 
 ## API接口
