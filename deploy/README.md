@@ -53,7 +53,7 @@ docker compose -f deploy/docker-compose.yml up -d
 
 # ④ 看一眼
 docker compose -f deploy/docker-compose.yml logs -f ziwei
-curl -I http://localhost:3000/
+curl -I http://localhost:3000/ziweibot/account
 ```
 
 浏览器打开 <http://localhost:3000>。
@@ -183,8 +183,8 @@ deploy/make-test-dataset.sh /tmp/ziwei-test-data 1990
 
 # 起容器 + 验证
 docker run --rm -d --name ziwei -p 3000:3000 -v /tmp/ziwei-test-data:/app/data ziwei-assistant:latest
-curl -s -o /dev/null -w '%{http_code}\n' http://localhost:3000/
-curl -s 'http://localhost:3000/chart?y=1990&m=1&d=1&h=0&g=male' | grep -o '天府' | head -1
+curl -s -o /dev/null -w '%{http_code}\n' http://localhost:3000/ziweibot/account
+curl -s 'http://localhost:3000/ziweibot/chart?y=1990&m=1&d=1&h=0&g=male' | grep -o '天府' | head -1
 ```
 
 镜像里也带了这个脚本，容器内一条命令搞定：
@@ -249,6 +249,7 @@ docker compose -f deploy/docker-compose.yml down
 | 变量 | 默认 | 说明 |
 |---|---|---|
 | `ZIWEI_PORT` | `3000` | 宿主机映射端口（容器内固定 3000） |
+| `API_KEY` | 空 | 创建账号接口 `POST /ziweibot/api/account/create` 的 `API_KEY` 请求头密钥；留空时接口不可用 |
 | `ZIWEI_ASK_PROVIDER` | 空 | `openai` / `anthropic` / `echo` |
 | `ZIWEI_ASK_BASE_URL` | 空 | OpenAI 兼容端点根地址 |
 | `ZIWEI_ASK_API_KEY` | 空 | **真 key 只写这里，不进镜像、不进 git** |
@@ -256,6 +257,14 @@ docker compose -f deploy/docker-compose.yml down
 | `ZIWEI_ASK_MAX_TOKENS` | `8000` | 单次输出上限 |
 | `ZIWEI_STATE_DIR` | `/app/state` | 运行状态目录（账户 / 会话 / 订单 / 每日额度计数）—— 必须挂 volume，否则重建容器丢账户与流量包余额 |
 | `ZIWEI_ASK_DAILY_LIMIT` | `3` | 每日免费追问次数（按账户 / 按 IP） |
+
+创建账号时，向 `POST /ziweibot/api/account/create` 发送请求头 `API_KEY: <deploy/.env 中的 API_KEY>`。
+未配置时接口返回 503，密钥不匹配返回 401；成功时返回已替换 `{KEY}`、`{URL}` 的纯文本模板。
+生成的 KEY 文件写在 `apps/web/accounts/`，compose 将该目录挂载到容器内，重建容器后仍保留。
+
+验证账号 KEY 时，向 `POST /ziweibot/api/account/verify` 发送相同的 `API_KEY` 请求头，
+并提交 JSON `{"key":"要验证的账号KEY"}`。接口返回 `{"valid":true}` 或 `{"valid":false}`，
+不创建登录会话；请求头缺失或错误返回 401，未配置 `API_KEY` 返回 503。
 
 > 追问 provider 留空 = 不接任何模型 API。排盘与 13 维解读（数据集检索）
 > **完全不受影响**，追问面板会明确提示「未配置 provider」，不会有出网请求。
@@ -402,7 +411,7 @@ ssh -i ~/.ssh/sp-deploy-rsa ubuntu@49.234.25.35 '
 
 # ⑤ 公网验证
 curl -s -o /dev/null -w "%{http_code}\n" https://ziwei.secondplanet.cc/
-curl -s "https://ziwei.secondplanet.cc/chart?y=2021&m=6&d=15&h=4&g=male" | grep -c 【命格总览】
+curl -s "https://ziwei.secondplanet.cc/ziweibot/chart?y=2021&m=6&d=15&h=4&g=male" | grep -c 【命格总览】
 ```
 
 ### 9.3 数据更新（补年份 / 重压缩）

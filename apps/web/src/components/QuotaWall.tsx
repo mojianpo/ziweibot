@@ -107,7 +107,7 @@ export default function QuotaWall({
         return;
       }
       try {
-        const res = await fetch(`/api/pay/status?orderId=${encodeURIComponent(orderId)}`, {
+        const res = await fetch(`/ziweibot/api/pay/status?orderId=${encodeURIComponent(orderId)}`, {
           cache: 'no-store',
         });
         const j = (await res.json().catch(() => null)) as {

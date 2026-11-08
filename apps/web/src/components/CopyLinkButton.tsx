@@ -8,7 +8,7 @@ export default function CopyLinkButton({ path, label = '复制链接' }: { path:
 
   const copy = async () => {
     try {
-      await navigator.clipboard.writeText(new URL(path, window.location.origin).toString());
+      await navigator.clipboard.writeText(new URL(`/ziweibot${path}`, window.location.origin).toString());
       setCopied(true);
       window.setTimeout(() => setCopied(false), 1600);
     } catch {

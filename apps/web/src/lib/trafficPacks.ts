@@ -10,7 +10,7 @@
 import { alipayConfigured } from './alipay';
 
 /** 流量包 checkout stub 的路径（POST { packId }） */
-export const CHECKOUT_PATH = '/api/checkout';
+export const CHECKOUT_PATH = '/ziweibot/api/checkout';
 
 export interface TrafficPack {
   /** 稳定 id，用于下单 stub */

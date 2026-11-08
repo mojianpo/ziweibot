@@ -51,7 +51,7 @@ export default async function ChartPage({
 }: {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
-  if (!await currentUser()) redirect('/account');
+  if (!await currentUser()) redirect('/ziweibot/account');
   const sp = await searchParams;
 
   const year = Number(one(sp.y));

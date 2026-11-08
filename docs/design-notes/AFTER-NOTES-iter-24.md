@@ -6,7 +6,7 @@
 | 文件 | 改动 |
 |---|---|
 | `apps/web/src/app/page.tsx` | Hero 副文案砍到**一句 28 字**（「输入生辰，先看盘，再读解读；没有依据的地方，直说不编造。」，旧 63 字 4 句已删，「不编造」底线保留）；中文主标改 `font-serif text-display`（碑刻字距 0.14em）；`#coverage` 从大 panel 卡片改为**默认收起的 `<details>`**；上下留白按 8pt 收紧 |
-| `apps/web/src/components/BirthForm.tsx` | form 容器 `panel` → `panel panel-ritual`（冷玉）；sticky CTA 底色改 `bg-surface-2/90` + 低反光边；「我的命盘」→ **星册**：加副标「只存在本机，不上传。」、空态去掉虚线框换成**线描星 SVG + 「排过的盘会留在这」**、列表行高 48px（`min-h-12`）+ 左侧星点、操作按钮横排、移动端默认折叠成「已存 N 张 · 展开/收起」 |
+| `apps/web/src/components/BirthForm.tsx` | form 容器 `panel` → `panel panel-ritual`（冷玉）；sticky CTA 底色改 `bg-surface-2/90` + 低反光边；「我的命盘」→ **星册**：加副标「只存在本机，不上传到服务端。」、空态去掉虚线框换成**线描星 SVG + 「排过的盘会留在这」**、列表行高 48px（`min-h-12`）+ 左侧星点、操作按钮横排、移动端默认折叠成「已存 N 张 · 展开/收起」 |
 | `apps/web/src/app/chart/loading.tsx` | 移动端骨架从「列表块」叙事改成与真盘**同几何的 4×4 矮格 + 中央 2×2 中宫**；容器接 `chart-submit` 淡入；文案「正在排盘与检索解读…」→「正在排布十二宫…」；解读骨架限制为桌面端（移动端解读已是 Tab） |
 
 ## 验收数字

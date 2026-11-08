@@ -30,6 +30,7 @@ services:
       # 运行状态目录（账户 / 会话 / 订单 / 每日额度计数）
       # 必须落在 volume 里，否则重建容器会丢账户与流量包余额
       ZIWEI_STATE_DIR: /app/state
+      API_KEY: "${API_KEY:-}"
 
       # ── 追问 provider（可选）─────────────────────────────────
       # 全部留空 = 不接任何模型 API：追问面板会明确提示「未配置 provider」，
@@ -63,9 +64,11 @@ services:
       - ziwei-data:/app/data
       # 运行状态：账户 / 会话 / 订单 / 每日额度计数（重建容器不丢）
       - ziwei-state:/app/state
+      # 新建 KEY 文件落在宿主机的 accounts 目录，容器重建后仍可登录
+      - ../apps/web/accounts:/app/apps/web/accounts
 
     healthcheck:
-      test: ["CMD-SHELL", "curl -fsS http://127.0.0.1:3000/ >/dev/null || exit 1"]
+      test: ["CMD-SHELL", "curl -fsS http://127.0.0.1:3000/ziweibot/account >/dev/null || exit 1"]
       interval: 30s
       timeout: 5s
       retries: 5

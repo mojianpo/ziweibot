@@ -78,7 +78,7 @@ export default function SynastryForm({ initialA, initialB }: SynastryFormProps) 
       an: a.name, ag: a.gender, ad: toDate(a), ah: a.hour,
       bn: b.name, bg: b.gender, bd: toDate(b), bh: b.hour,
     });
-    window.location.href = `/synastry?${params.toString()}`;
+    window.location.href = `/ziweibot/synastry?${params.toString()}`;
   };
 
   const field = (

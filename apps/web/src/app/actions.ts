@@ -20,7 +20,7 @@ function pad(n: number): string {
 }
 
 export async function startChart(formData: FormData): Promise<void> {
-  if (!await currentUser()) redirect('/account');
+  if (!await currentUser()) redirect('/ziweibot/account');
 
   const name = str(formData, 'name').trim();
   const year = Number(str(formData, 'year'));
@@ -34,13 +34,13 @@ export async function startChart(formData: FormData): Promise<void> {
   const gender = str(formData, 'gender') === 'female' ? 'female' : 'male';
 
   if (!Number.isInteger(year) || year < 1900 || year > 2100) {
-    redirect('/?error=year');
+    redirect('/ziweibot?error=year');
   }
   if (!Number.isInteger(month) || month < 1 || month > 12) {
-    redirect('/?error=month');
+    redirect('/ziweibot?error=month');
   }
   if (!Number.isInteger(day) || day < 1 || day > 31) {
-    redirect('/?error=day');
+    redirect('/ziweibot?error=day');
   }
   const probe = new Date(year, month - 1, day);
   if (
@@ -48,7 +48,7 @@ export async function startChart(formData: FormData): Promise<void> {
     probe.getMonth() !== month - 1 ||
     probe.getDate() !== day
   ) {
-    redirect('/?error=date');
+    redirect('/ziweibot?error=date');
   }
 
   let chartYear = year;
@@ -62,7 +62,7 @@ export async function startChart(formData: FormData): Promise<void> {
       !Number.isInteger(clockHour) || clockHour < 0 || clockHour > 23 ||
       !Number.isInteger(clockMinute) || clockMinute < 0 || clockMinute > 59
     ) {
-      redirect('/?error=clock');
+      redirect('/ziweibot?error=clock');
     }
     const r = resolveChartDate(year, month, day, clockHour, clockMinute);
     chartYear = r.year;
@@ -72,7 +72,7 @@ export async function startChart(formData: FormData): Promise<void> {
     lateZi = chartYear !== year || chartMonth !== month || chartDay !== day;
   } else {
     if (!Number.isInteger(shichen) || shichen < 0 || shichen > 11) {
-      redirect('/?error=shichen');
+      redirect('/ziweibot?error=shichen');
     }
     if (shichen === 0 && ziVariant === 'next') {
       // 晚子时：按次日排盘（与钟点 23:xx 走同一条规则）
@@ -105,5 +105,5 @@ export async function startChart(formData: FormData): Promise<void> {
     params.set('bd', `${year}-${pad(month)}-${pad(day)}`);
   }
 
-  redirect(`/chart?${params.toString()}`);
+  redirect(`/ziweibot/chart?${params.toString()}`);
 }

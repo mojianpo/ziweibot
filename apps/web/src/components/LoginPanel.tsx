@@ -23,7 +23,7 @@ export default function LoginPanel({
     setBusy(true);
     setError(false);
     try {
-      const res = await fetch('/api/auth/login-key', {
+      const res = await fetch('/ziweibot/api/auth/login-key', {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify({ key }),
@@ -68,6 +68,13 @@ export default function LoginPanel({
         </button>
       </div>
       {error && <p id="ziwei-login-error" className="mt-3 text-sm text-danger" role="alert">{copy.loginError}</p>}
+      {!compact && (
+        <p className="mt-6 border-t border-lineSoft pt-5 text-sm leading-relaxed text-ink-2">
+          {lang === 'zh'
+            ? '想获取登录账号 KEY？打开拼多多，搜索店铺「莫小坡的铺子」，或搜索「紫微BOT」「紫微bot」；也可以直接点击商品链接下单。下单即可获取登录账号 KEY。'
+            : 'Need an account KEY? Open Pinduoduo and search for the store “莫小坡的铺子”, or search “紫微BOT” or “紫微bot”. You can also order through the product link. Place an order to get your account KEY.'}
+        </p>
+      )}
     </form>
   );
 }

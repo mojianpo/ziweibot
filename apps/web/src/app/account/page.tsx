@@ -28,7 +28,7 @@ export default function AccountPage() {
   const load = useCallback(async () => {
     setState('loading');
     try {
-      const res = await fetch('/api/account/quota', { cache: 'no-store' });
+      const res = await fetch('/ziweibot/api/account/quota', { cache: 'no-store' });
       if (res.status === 401) {
         setState('out');
         return;
@@ -52,7 +52,7 @@ export default function AccountPage() {
     setLoggingOut(true);
     setLogoutError(false);
     try {
-      const res = await fetch('/api/auth/logout', { method: 'POST' });
+      const res = await fetch('/ziweibot/api/auth/logout', { method: 'POST' });
       if (!res.ok) throw new Error('Logout failed');
       setState('out');
       setTimestamp(null);

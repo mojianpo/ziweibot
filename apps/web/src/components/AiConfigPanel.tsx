@@ -99,7 +99,7 @@ export default function AiConfigPanel({
       fd.set('key', cfg.apiKey);
       fd.set('model', cfg.model);
       fd.set('baseUrl', cfg.baseUrl);
-      const r = await fetch('/api/ai-test', { method: 'POST', body: fd });
+      const r = await fetch('/ziweibot/api/ai-test', { method: 'POST', body: fd });
       const j = (await r.json()) as { ok: boolean; model?: string; error?: string };
       setTest(j.ok ? { phase: 'ok', model: j.model ?? cfg.model } : { phase: 'fail', error: j.error ?? '未知错误' });
     } catch {

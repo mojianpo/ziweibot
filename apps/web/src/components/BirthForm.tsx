@@ -444,7 +444,7 @@ export default function BirthForm({
               )}
             </h2>
             <p className="mt-1 text-2xs leading-relaxed text-ink-2">
-              只存在本机，不上传。
+              只存在本机，不上传到服务端。
               {history.length >= MAX_ENTRIES &&
                 ` 最多存 ${MAX_ENTRIES} 张，新存的会挤掉最早的一张。`}
             </p>
@@ -502,7 +502,7 @@ export default function BirthForm({
                     <div className="group flex items-center gap-2">
                       <StarGlyph className="h-2.5 w-2.5 shrink-0 text-zhu/70" />
                       <a
-                        href={url ?? '#'}
+                        href={url ? `/ziweibot${url}` : '#'}
                         onClick={(e) => {
                           if (!url) {
                             e.preventDefault();

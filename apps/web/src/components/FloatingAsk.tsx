@@ -66,7 +66,7 @@ export default function FloatingAsk({
       setOpen(false);
       setSeed(null);
       setAuthorized(false);
-      void fetch('/api/auth/me', { cache: 'no-store' })
+      void fetch('/ziweibot/api/auth/me', { cache: 'no-store' })
         .then((res) => res.ok ? res.json() : null)
         .then((result: { loggedIn?: boolean } | null) => {
           if (active && current === requestId) setAuthorized(Boolean(result?.loggedIn));

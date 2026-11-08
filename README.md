@@ -11,3 +11,19 @@
 > 本工具仅供文化兴趣与学习之用，不构成任何医疗、法律、投资或人生决策建议。
 
 ---
+
+## API接口
+
+### 创建账号接口
+
+curl -X POST "http://localhost:3000/ziweibot/api/account/create" -H "API_KEY: ***"
+
+### 验证账号接口
+
+curl -X POST 'http://localhost:3000/ziweibot/api/account/verify' \
+-H 'API_KEY: ***' \
+-H 'Content-Type: application/json' \
+-d '{"key":"mojianpo"}'
+
+返回 {"valid":true} 表示账号 KEY 当前可以登录
+ 

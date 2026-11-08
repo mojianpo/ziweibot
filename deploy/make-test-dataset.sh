@@ -66,4 +66,4 @@ fi
 echo
 echo "完成。挂载这个目录即可冒烟："
 echo "  docker run --rm -p 3000:3000 -v $TARGET:/app/data ziwei-assistant:latest"
-echo "  curl 'http://localhost:3000/chart?y=$YEAR&m=1&d=1&h=0&g=male'"
+echo "  curl 'http://localhost:3000/ziweibot/chart?y=$YEAR&m=1&d=1&h=0&g=male'"

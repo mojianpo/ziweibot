@@ -46,7 +46,7 @@ export default async function SynastryPage({
 }: {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
-  if (!await currentUser()) redirect('/account');
+  if (!await currentUser()) redirect('/ziweibot/account');
   const sp = await searchParams;
   const a = readPerson(sp, 'a');
   const b = readPerson(sp, 'b');

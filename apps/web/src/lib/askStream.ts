@@ -74,7 +74,7 @@ interface RawEvent {
  * 抛异常只发生在「连不上服务端」这类硬故障；模型侧的失败由 onError 回调给出。
  */
 export async function streamAsk(formData: FormData, handlers: AskStreamHandlers): Promise<void> {
-  const res = await fetch('/api/ask', { method: 'POST', body: formData });
+  const res = await fetch('/ziweibot/api/ask', { method: 'POST', body: formData });
 
   if (!res.ok) {
     handlers.onError(`追问请求失败（HTTP ${res.status}），请稍后重试。`);
@@ -152,7 +152,7 @@ function dispatch(evt: RawEvent, handlers: AskStreamHandlers): void {
         message: evt.message ?? '',
         limit: evt.limit ?? 0,
         loggedIn: evt.loggedIn ?? false,
-        packEntry: evt.packEntry ?? { packs: [], checkout: '/api/checkout' },
+        packEntry: evt.packEntry ?? { packs: [], checkout: '/ziweibot/api/checkout' },
       });
       return;
     default:

@@ -26,7 +26,7 @@ let cached: Promise<QuotaStatus> | null = null;
 /** 拉一次额度状态（模块内缓存） */
 export function fetchQuotaStatus(): Promise<QuotaStatus> {
   if (!cached) {
-    cached = fetch('/api/quota', { cache: 'no-store' })
+    cached = fetch('/ziweibot/api/quota', { cache: 'no-store' })
       .then((r) => (r.ok ? r.json() : null))
       .then((j: Partial<QuotaStatus> | null) => ({
         limit: typeof j?.limit === 'number' ? j.limit : DAILY_LIMIT,
