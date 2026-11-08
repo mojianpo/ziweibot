@@ -10,6 +10,7 @@
 
 import { liuNianLayer, daXianLayer, type ChartPalace } from '@ziwei/chart-engine';
 import { getService } from '@/lib/service';
+import { currentUser } from '@/lib/session';
 
 export interface ChatChartPayload {
   palaces: ChartPalace[];
@@ -44,6 +45,7 @@ export async function getChatChart(
   hour: number,
   gender: 'male' | 'female',
 ): Promise<ChatChartPayload | null> {
+  if (!await currentUser()) return null;
   if (
     !Number.isInteger(year) || !Number.isInteger(month) || !Number.isInteger(day) ||
     !Number.isInteger(hour) || hour < 0 || hour > 11

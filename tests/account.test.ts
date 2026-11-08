@@ -1,14 +1,13 @@
 /**
- * 账户 / 验证码 / 会话 / 账户额度 —— 本地存储层回归。
+ * 账户 / 会话 / 账户额度 —— 本地存储层回归。
  *
  * 全部走真实落盘（ZIWEI_STATE_DIR 指到临时目录），不 mock fs：
  * 落盘格式与额度口径是最容易悄悄坏掉的地方。
  *
  * 覆盖：
- *  1. 验证码：发放 / 校验 / 用后作废 / 试错上限 / 过期
- *  2. 会话：创建 / 查询 / 注销
- *  3. 账户额度：先免费日额 → 再流量包余额 → 都尽才出墙；失败退还
- *  4. stub 下单：加余额 + 记订单
+ *  1. KEY 用户身份与会话
+ *  2. 账户额度：先免费日额 → 再流量包余额 → 都尽才出墙；失败退还
+ *  3. 下单：付款成功才加余额
  */
 
 import assert from 'node:assert/strict';
@@ -28,20 +27,17 @@ const {
   createOrder,
   createSession,
   destroySession,
+  ensureKeyUser,
   ensureUser,
   getOrder,
   getSessionUser,
   getUser,
   getUserById,
-  isValidEmail,
-  issueOtp,
   listOrders,
   markOrderPaid,
   normalizeEmail,
-  otpRateLimit,
   refundUserAsk,
   userIdFor,
-  verifyOtp,
 } = await import('../apps/web/src/lib/account');
 const { reserveFor, snapshotFor } = await import('../apps/web/src/lib/askAccess');
 
@@ -53,44 +49,21 @@ function reset(): void {
 }
 
 export const suite = async (t: Tester): Promise<void> => {
-  await t.test('邮箱归一化与格式校验', () => {
+  await t.test('已有邮箱用户 ID 保持稳定', () => {
     assert.equal(normalizeEmail('  Foo@Example.COM '), 'foo@example.com');
-    assert.equal(isValidEmail('a@b.co'), true);
-    assert.equal(isValidEmail('nope'), false);
-    assert.equal(isValidEmail('a@b'), false);
     // userId 由邮箱派生 —— 同邮箱永远同 id
     assert.equal(userIdFor('A@B.com'), userIdFor('a@b.com'));
     assert.notEqual(userIdFor('a@b.com'), userIdFor('c@b.com'));
   });
 
-  await t.test('验证码：发放 → 校验通过 → 用后作废', () => {
+  await t.test('KEY 用户身份区分大小写且保留账户余额', () => {
     reset();
-    const { code, record } = issueOtp('x@example.com');
-    assert.match(code, /^\d{6}$/);
-    assert.equal(record.email, 'x@example.com');
-    assert.ok(new Date(record.expiresAt).getTime() > Date.now());
-    assert.equal(verifyOtp('x@example.com', code), true);
-    // 用过即作废 —— 同一个码不能复用
-    assert.equal(verifyOtp('x@example.com', code), false);
-  });
-
-  await t.test('验证码：错误码不通过，且有试错上限', () => {
-    reset();
-    const { code } = issueOtp('y@example.com');
-    for (let i = 0; i < 5; i++) {
-      assert.equal(verifyOtp('y@example.com', '000000'), false);
-    }
-    // 试错满 5 次后即使给出正确码也不认
-    assert.equal(verifyOtp('y@example.com', code), false);
-  });
-
-  await t.test('验证码：60 秒内同邮箱不能重复发', () => {
-    reset();
-    issueOtp('z@example.com');
-    const wait = otpRateLimit('z@example.com');
-    assert.ok(wait !== null && wait > 0, '第二次发码应当被限流');
-    // 别的邮箱不受影响
-    assert.equal(otpRateLimit('other@example.com'), null);
+    const user = ensureKeyUser('TestKey');
+    assert.equal(user.email, `KEY-${user.id.slice(0, 8)}`);
+    assert.equal(fs.readFileSync(path.join(STATE_DIR, 'users.json'), 'utf8').includes('TestKey'), false);
+    addPackBalance(user.id, 2);
+    assert.equal(ensureKeyUser('TestKey').packBalance, 2);
+    assert.notEqual(ensureKeyUser('testkey').id, user.id);
   });
 
   await t.test('会话：创建 → 查询 → 注销', () => {

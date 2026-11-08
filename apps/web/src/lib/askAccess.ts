@@ -1,5 +1,3 @@
-import { headers } from 'next/headers';
-
 import {
   accountQuota,
   chargeUserAsk,
@@ -55,14 +53,6 @@ export function vipLimitFor(subject: QuotaSubject): number | null {
 export type QuotaSubject =
   | { kind: 'user'; userId: string }
   | { kind: 'ip'; ip: string };
-
-/** 当前请求的 IP（归属键之一） */
-export async function requestIp(): Promise<string> {
-  const h = await headers();
-  return (
-    h.get('x-forwarded-for')?.split(',')[0] ?? h.get('x-real-ip') ?? 'unknown'
-  ).trim();
-}
 
 /** 占位成功 → 拿到一个「还回去」的函数 */
 export interface Reservation {

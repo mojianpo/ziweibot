@@ -67,59 +67,28 @@ export interface QuotaCopy {
   payNotConfigured: string;
   /** 语言切换按钮上的字：切到哪个语言 */
   langToggle: string;
-  // ── 账户 / 登录相关（第二期：邮箱验证码登录 + 账户额度）─────────────
+  // ── 账户 / KEY 登录 ──────────────────────────────────────────────
   /** 未登录时购买区上方的提示 */
   loginRequired: string;
   /** 未登录时的「去登录」按钮 */
   loginCta: string;
-  /** 登录表单：邮箱输入框 */
-  emailLabel: string;
-  /** 登录表单：邮箱占位符 */
-  emailPlaceholder: string;
-  /** 登录表单：验证码输入框 */
-  codeLabel: string;
-  /** 登录表单：验证码占位符 */
-  codePlaceholder: string;
-  /** 发送验证码按钮 */
-  sendCode: string;
-  /** 校验并登录按钮 */
+  /** KEY 输入框 */
+  keyLabel: string;
+  keyPlaceholder: string;
   verifyLogin: string;
+  loginBusy: string;
   /** 登录表单副标题 */
   loginTitle: string;
   /** 登录表单说明 */
   loginHint: string;
-  /** 验证码已发送 */
-  codeSent: string;
-  /** 调试模式：验证码直接显示（本地测试用） */
-  debugCode: (code: string) => string;
-  /** 发送验证码太频繁（retryAfter = 还要等几秒；0 = 今日次数用完） */
-  sendRateLimited: (retryAfter: number) => string;
-  /** 验证码发送失败（发信通道故障等，与「码错了」是两回事） */
-  sendFailed: string;
-  /** 登录失败 / 验证码错误 */
+  /** KEY 不存在或失效 */
   loginError: string;
-  /** 登录成功 */
-  loginOk: string;
-  /** 「我的额度」页标题 */
+  /** 账号页标题 */
   accountTitle: string;
-  /** 「我的额度」页：当前登录邮箱 */
-  accountEmail: string;
-  /** 「我的额度」页：今日免费剩余（完整文案） */
-  accountFree: (remaining: number, limit: number) => string;
-  /** 「我的额度」页：今日免费剩余（标签） */
-  accountFreeLabel: string;
-  /** 「我的额度」页：流量包余额（完整文案） */
-  accountPack: (n: number) => string;
-  /** 「我的额度」页：流量包余额（标签） */
-  accountPackLabel: string;
-  /** 「我的额度」页：订单标题 */
-  accountOrders: string;
-  /** 「我的额度」页：没有订单 */
-  accountNoOrders: string;
-  /** 「我的额度」页：订单行（n 次 · 时间） */
-  accountOrderItem: (asks: number, at: string) => string;
-  /** 订单状态：pending / paid / closed / stub */
-  orderStatus: (s: string) => string;
+  /** 账号页：当前账号标识 */
+  accountKey: string;
+  accountExpiryLabel: string;
+  accountExpiry: (timestamp: number, now: number) => string;
   /** 退出登录按钮 */
   logout: string;
   /** 导航栏入口 */
@@ -165,32 +134,19 @@ const ZH: QuotaCopy = {
   langToggle: 'EN',
   loginRequired: '登录后可以购买流量包，额度记在你的账户里。',
   loginCta: '去登录',
-  emailLabel: '邮箱',
-  emailPlaceholder: 'you@example.com',
-  codeLabel: '验证码',
-  codePlaceholder: '6 位数字',
-  sendCode: '发送验证码',
+  keyLabel: 'KEY',
+  keyPlaceholder: '请输入 KEY',
   verifyLogin: '登录',
-  loginTitle: '邮箱验证码登录',
-  loginHint: '验证码 10 分钟内有效，每天最多发 20 次。',
-  codeSent: '验证码已发送，请查收邮件。',
-  debugCode: (c) => `（本地调试：验证码是 ${c}）`,
-  sendRateLimited: (s) =>
-    s > 0 ? `发送太频繁，请 ${s} 秒后再点「发送验证码」。` : '今天的验证码发送次数已达上限，明天再试。',
-  sendFailed: '验证码发送失败，请稍后重试。',
-  loginError: '验证码无效或已过期，请重新获取。',
-  loginOk: '登录成功。',
+  loginBusy: '登录中…',
+  loginTitle: 'KEY 登录',
+  loginHint: '输入账号 KEY 后登录。',
+  loginError: '此 KEY 不存在或者已过期！',
   accountTitle: '我的账号',
-  accountEmail: '登录邮箱',
-  accountFree: (r, l) => (l === -1 || l >= 1000 ? '今日免费不限次' : `今日免费剩余 ${r} / ${l} 次`),
-  accountFreeLabel: '免费额度',
-  accountPack: (n) => `流量包余额 ${n} 次`,
-  accountPackLabel: '流量包',
-  accountOrders: '最近订单',
-  accountNoOrders: '还没有订单。',
-  accountOrderItem: (n, at) => `${n} 次追问 · ${at}`,
-  orderStatus: (s) =>
-    s === 'paid' ? '✓ 已支付' : s === 'pending' ? '待支付' : s === 'closed' ? '已关闭' : '意向（未收款）',
+  accountKey: '当前账号',
+  accountExpiryLabel: '剩余有效期',
+  accountExpiry: (timestamp, now) => timestamp === -1
+    ? '永不过期'
+    : `${Math.max(0, Math.ceil((timestamp + 7 * 86_400_000 - now) / 86_400_000))} 天`,
   logout: '退出登录',
   navAccount: '我的账号',
 };
@@ -232,32 +188,19 @@ const EN: QuotaCopy = {
   langToggle: '中文',
   loginRequired: 'Sign in to buy a traffic pack — the credits go to your account.',
   loginCta: 'Sign in',
-  emailLabel: 'Email',
-  emailPlaceholder: 'you@example.com',
-  codeLabel: 'Verification code',
-  codePlaceholder: '6 digits',
-  sendCode: 'Send code',
+  keyLabel: 'KEY',
+  keyPlaceholder: 'Enter your KEY',
   verifyLogin: 'Sign in',
-  loginTitle: 'Sign in with email code',
-  loginHint: 'Codes expire in 10 minutes; at most 20 per day.',
-  codeSent: 'Code sent — check your inbox.',
-  debugCode: (c) => `(local debug: your code is ${c})`,
-  sendRateLimited: (s) =>
-    s > 0 ? `Too many requests — try again in ${s}s.` : 'Daily code limit reached. Try again tomorrow.',
-  sendFailed: 'Failed to send the code. Please try again later.',
-  loginError: 'That code is invalid or expired. Request a new one.',
-  loginOk: 'Signed in.',
+  loginBusy: 'Signing in…',
+  loginTitle: 'Sign in with KEY',
+  loginHint: 'Enter your account KEY to sign in.',
+  loginError: 'This KEY does not exist or has expired.',
   accountTitle: 'My account',
-  accountEmail: 'Signed in as',
-  accountFree: (r, l) => (l === -1 || l >= 1000 ? 'Unlimited free follow-ups today' : `Free follow-ups left today: ${r} / ${l}`),
-  accountFreeLabel: 'Free quota',
-  accountPack: (n) => `Traffic pack balance: ${n}`,
-  accountPackLabel: 'Traffic pack',
-  accountOrders: 'Recent orders',
-  accountNoOrders: 'No orders yet.',
-  accountOrderItem: (n, at) => `${n} follow-ups · ${at}`,
-  orderStatus: (s) =>
-    s === 'paid' ? '✓ Paid' : s === 'pending' ? 'Pending' : s === 'closed' ? 'Closed' : 'Intent (no charge)',
+  accountKey: 'Account',
+  accountExpiryLabel: 'Validity remaining',
+  accountExpiry: (timestamp, now) => timestamp === -1
+    ? 'Never expires'
+    : `${Math.max(0, Math.ceil((timestamp + 7 * 86_400_000 - now) / 86_400_000))} days`,
   logout: 'Sign out',
   navAccount: 'My account',
 };

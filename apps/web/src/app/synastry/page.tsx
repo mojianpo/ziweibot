@@ -1,5 +1,7 @@
 import Link from 'next/link';
+import { redirect } from 'next/navigation';
 import { getService } from '@/lib/service';
+import { currentUser } from '@/lib/session';
 import { SI_HUA_TABLE } from '@ziwei/chart-engine';
 import type { ChartJSON } from '@ziwei/chart-engine';
 import { SHICHEN_NAMES } from '@/lib/birth';
@@ -44,6 +46,7 @@ export default async function SynastryPage({
 }: {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
+  if (!await currentUser()) redirect('/account');
   const sp = await searchParams;
   const a = readPerson(sp, 'a');
   const b = readPerson(sp, 'b');

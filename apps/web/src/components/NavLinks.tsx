@@ -21,12 +21,12 @@ export default function NavLinks() {
   const copy = QUOTA_COPY[lang];
 
   const linkClass = (current: boolean) =>
-    `inline-flex min-h-9 items-center whitespace-nowrap rounded-md px-2 py-1.5 text-xs tracking-wide transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zhu sm:px-3 ${
+    `inline-flex min-h-11 items-center whitespace-nowrap rounded-md px-2 py-1.5 text-xs tracking-wide transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zhu sm:min-h-9 sm:px-3 ${
       current ? 'bg-paper text-ink' : 'text-ink-2 hover:bg-paper hover:text-ink'
     }`;
 
   return (
-    <nav className="flex items-center gap-1" aria-label="主导航">
+    <nav className="flex w-full items-center justify-between gap-1 sm:w-auto" aria-label="主导航">
       {NAV.map((item) => {
         const current = isCurrent(pathname, item.href);
         return (

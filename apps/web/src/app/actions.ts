@@ -8,6 +8,7 @@
  */
 import { redirect } from 'next/navigation';
 import { resolveChartDate, shichenFromClock } from '@ziwei/chart-engine';
+import { currentUser } from '@/lib/session';
 
 function str(formData: FormData, key: string): string {
   const v = formData.get(key);
@@ -19,6 +20,8 @@ function pad(n: number): string {
 }
 
 export async function startChart(formData: FormData): Promise<void> {
+  if (!await currentUser()) redirect('/account');
+
   const name = str(formData, 'name').trim();
   const year = Number(str(formData, 'year'));
   const month = Number(str(formData, 'month'));

@@ -1,6 +1,8 @@
 import Link from 'next/link';
+import { redirect } from 'next/navigation';
 import { liuNianLayer, daXianLayer, liuYueLayer, type ChartJSON } from '@ziwei/chart-engine';
 import { getService } from '@/lib/service';
+import { currentUser } from '@/lib/session';
 import { SHICHEN_NAMES, GENDER_LABEL } from '@/lib/birth';
 import CopyLinkButton from '@/components/CopyLinkButton';
 
@@ -38,6 +40,7 @@ export default async function ReportPage({
 }: {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
+  if (!await currentUser()) redirect('/account');
   const sp = await searchParams;
   const year = Number(one(sp.y));
   const month = Number(one(sp.m));

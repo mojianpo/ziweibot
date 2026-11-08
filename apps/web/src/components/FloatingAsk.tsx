@@ -46,6 +46,7 @@ export default function FloatingAsk({
   serverModel?: string;
 }) {
   const pathname = usePathname();
+  const [authorized, setAuthorized] = useState(false);
   const [open, setOpen] = useState(false);
   const [showConfig, setShowConfig] = useState(false);
   const [seed, setSeed] = useState<AskSeed | null>(null);
@@ -56,6 +57,29 @@ export default function FloatingAsk({
   const [lang] = useLang();
   const quota = useQuotaStatus();
   const copy = QUOTA_COPY[lang];
+
+  useEffect(() => {
+    let active = true;
+    let requestId = 0;
+    const refreshAuth = () => {
+      const current = ++requestId;
+      setOpen(false);
+      setSeed(null);
+      setAuthorized(false);
+      void fetch('/api/auth/me', { cache: 'no-store' })
+        .then((res) => res.ok ? res.json() : null)
+        .then((result: { loggedIn?: boolean } | null) => {
+          if (active && current === requestId) setAuthorized(Boolean(result?.loggedIn));
+        })
+        .catch(() => { if (active && current === requestId) setAuthorized(false); });
+    };
+    refreshAuth();
+    window.addEventListener('ziwei:auth-changed', refreshAuth);
+    return () => {
+      active = false;
+      window.removeEventListener('ziwei:auth-changed', refreshAuth);
+    };
+  }, [pathname]);
 
   // 打开面板时刷新 AI 配置状态（设置完回来不用刷新）
   useEffect(() => {
@@ -69,7 +93,7 @@ export default function FloatingAsk({
   useEffect(() => {
     const handler = (e: Event) => {
       const detail = (e as CustomEvent<ZiweiAskEventDetail>).detail;
-      if (!detail?.question) return;
+      if (!authorized || !detail?.question) return;
       if (detail.birth) setEventBirth(detail.birth);
       setSeed({
         id: Date.now(),
@@ -83,7 +107,7 @@ export default function FloatingAsk({
     };
     window.addEventListener('ziwei:ask', handler);
     return () => window.removeEventListener('ziwei:ask', handler);
-  }, []);
+  }, [authorized]);
 
   // 盘的解析：事件带的生辰 > 最近档案
   const fallback = useMemo<PanelBirth | null>(() => {
@@ -110,8 +134,8 @@ export default function FloatingAsk({
     setSeed(null);
   }, []);
 
-  // 首页本身就是对话，悬浮球只出现在其余页面；排盘表单页也要让位，别压住表单
-  if (pathname === '/' || pathname === '/new') return null;
+  // 首页本身就是对话；排盘表单和公开说明页不显示悬浮入口
+  if (!authorized || pathname === '/' || pathname === '/new' || pathname === '/about') return null;
 
   // 盘面页底部有「命盘 | 解读」底栏 + 图例行，球要抬到图例之上；其余页面贴底
   const onChartPage = pathname.startsWith('/chart');

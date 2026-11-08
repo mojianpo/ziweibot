@@ -1,8 +1,10 @@
 import Link from 'next/link';
+import { redirect } from 'next/navigation';
 import ChartTabs from '@/components/ChartTabBar';
 import { describeProviderEnv } from '@ziwei/ask';
 import { liuNianLayer, daXianLayer, liuYueLayer } from '@ziwei/chart-engine';
 import { getService } from '@/lib/service';
+import { currentUser } from '@/lib/session';
 import { GENDER_LABEL, SHICHEN_NAMES, SHICHEN_RANGES, formatDate } from '@/lib/birth';
 import {
   applyCitationModeToDimensions,
@@ -49,6 +51,7 @@ export default async function ChartPage({
 }: {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
+  if (!await currentUser()) redirect('/account');
   const sp = await searchParams;
 
   const year = Number(one(sp.y));

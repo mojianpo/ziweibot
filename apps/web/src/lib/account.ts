@@ -11,15 +11,15 @@ import {
   usedIn,
   utcDay,
 } from './quotaStore';
+import { keyUserIdFor } from './keyAuth';
 
 /**
- * 账户 / 会话 / 订单 / 验证码的**本地存储**（第一期：单机 JSON 文件）。
+ * 账户 / 会话 / 订单的**本地存储**（单机 JSON 文件）。
  *
  * 落盘位置在 `ZIWEI_STATE_DIR`（默认 cwd/.data）：
  *   · users.json    —— 用户（按 userId 索引）
  *   · sessions.json —— 会话 token
  *   · orders.json   —— 流量包订单（stub）
- *   · otp.json      —— 邮箱验证码
  *
  * 结构刻意保持「一张表一个文件、字段直白」，以后换 SQLite/Postgres 时
  * 只需替换本文件的读写实现，上层 API 契约不变。
@@ -60,28 +60,8 @@ export interface Session {
   expiresAt: string;
 }
 
-/** 验证码记录 */
-export interface OtpRecord {
-  email: string;
-  code: string;
-  sentAt: string;
-  expiresAt: string;
-  /** 当天已发送次数（同邮箱日上限 20） */
-  dayCount: number;
-  /** 校验失败次数（错 5 次即作废） */
-  attempts: number;
-}
-
 /** 会话有效期：30 天 */
 export const SESSION_TTL_MS = 30 * 24 * 60 * 60 * 1000;
-/** 验证码有效期：10 分钟 */
-export const OTP_TTL_MS = 10 * 60 * 1000;
-/** 同邮箱两次发送的最小间隔：60 秒 */
-export const OTP_MIN_INTERVAL_MS = 60 * 1000;
-/** 同邮箱每天发送上限：20 次 */
-export const OTP_DAILY_LIMIT = 20;
-/** 验证码最多试错次数 */
-export const OTP_MAX_ATTEMPTS = 5;
 
 // ── 文件读写 ────────────────────────────────────────────────────────
 
@@ -109,11 +89,6 @@ function writeJson(name: string, value: unknown): void {
 /** 邮箱归一化：去空格 + 小写 */
 export function normalizeEmail(raw: string): string {
   return raw.trim().toLowerCase();
-}
-
-/** 粗校验邮箱格式（够挡住手滑，不做完整 RFC） */
-export function isValidEmail(email: string): boolean {
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }
 
 /**
@@ -145,6 +120,22 @@ export function ensureUser(email: string): User {
   const user: User = {
     id,
     email: normalizeEmail(email),
+    createdAt: new Date().toISOString(),
+    packBalance: 0,
+  };
+  table[id] = user;
+  writeJson('users.json', table);
+  return user;
+}
+
+/** KEY 登录沿用账户余额和会话；id 按 KEY 原样派生，保留大小写区分。 */
+export function ensureKeyUser(key: string): User {
+  const id = keyUserIdFor(key);
+  const table = users();
+  if (table[id]) return table[id];
+  const user: User = {
+    id,
+    email: `KEY-${id.slice(0, 8)}`,
     createdAt: new Date().toISOString(),
     packBalance: 0,
   };
@@ -214,78 +205,6 @@ export function destroySession(token: string | undefined | null): void {
   if (!table[token]) return;
   delete table[token];
   writeJson('sessions.json', table);
-}
-
-// ── 验证码 ──────────────────────────────────────────────────────────
-
-type OtpTable = Record<string, OtpRecord>;
-
-function otps(): OtpTable {
-  return readJson<OtpTable>('otp.json', {});
-}
-
-/**
- * 同邮箱发送限流：60 秒 1 次 + 每天 20 次。
- * 返回 null 表示可以发，否则返回需要等待的秒数。
- */
-export function otpRateLimit(email: string): number | null {
-  const rec = otps()[normalizeEmail(email)];
-  if (!rec) return null;
-  const now = Date.now();
-  const sinceLast = now - new Date(rec.sentAt).getTime();
-  if (sinceLast < OTP_MIN_INTERVAL_MS) {
-    return Math.ceil((OTP_MIN_INTERVAL_MS - sinceLast) / 1000);
-  }
-  if (rec.dayCount >= OTP_DAILY_LIMIT) return 0;
-  return null;
-}
-
-/** 生成并落盘一个验证码 */
-export function issueOtp(email: string): { code: string; record: OtpRecord } {
-  const key = normalizeEmail(email);
-  const table = otps();
-  const prev = table[key];
-  const now = new Date();
-  const code = String(crypto.randomInt(0, 1_000_000)).padStart(6, '0');
-  const record: OtpRecord = {
-    email: key,
-    code,
-    sentAt: now.toISOString(),
-    expiresAt: new Date(now.getTime() + OTP_TTL_MS).toISOString(),
-    dayCount: prev && utcDay(new Date(prev.sentAt)) === utcDay(now) ? prev.dayCount + 1 : 1,
-    attempts: 0,
-  };
-  table[key] = record;
-  writeJson('otp.json', table);
-  return { code, record };
-}
-
-/** 校验验证码；成功即作废 */
-export function verifyOtp(email: string, code: string): boolean {
-  const key = normalizeEmail(email);
-  const table = otps();
-  const rec = table[key];
-  if (!rec) return false;
-  const now = Date.now();
-  if (new Date(rec.expiresAt).getTime() <= now) {
-    delete table[key];
-    writeJson('otp.json', table);
-    return false;
-  }
-  if (rec.attempts >= OTP_MAX_ATTEMPTS) {
-    delete table[key];
-    writeJson('otp.json', table);
-    return false;
-  }
-  if (rec.code !== code.trim()) {
-    rec.attempts += 1;
-    table[key] = rec;
-    writeJson('otp.json', table);
-    return false;
-  }
-  delete table[key];
-  writeJson('otp.json', table);
-  return true;
 }
 
 // ── 订单 ────────────────────────────────────────────────────────────

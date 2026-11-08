@@ -38,6 +38,9 @@ export default async function AboutPage() {
           紫微BOT把公历生辰排成十二宫命盘，并检索对应的十三维解读。
           排盘是确定性计算，解读是数据集原文检索——两个环节都不经过大模型推算。
         </p>
+         <p className="mt-4 text-[15px] leading-[1.9] text-ink-2">
+                  <b>温馨提示：</b> {DISCLAIMER}
+         </p>
       </header>
 
       <div className="space-y-8">

@@ -1,6 +1,7 @@
 import { cookies } from 'next/headers';
 
 import { getSessionUser } from './account';
+import { accountTimestampForUser, activeAccountTimestamp } from './keyAuth';
 
 /**
  * 登录态读取 —— httpOnly cookie 里放随机 session token，服务端查表。
@@ -15,5 +16,6 @@ export const SESSION_COOKIE = 'ziwei_session';
 /** 取当前登录用户（未登录返回 null） */
 export async function currentUser() {
   const store = await cookies();
-  return getSessionUser(store.get(SESSION_COOKIE)?.value);
+  const user = getSessionUser(store.get(SESSION_COOKIE)?.value);
+  return user && activeAccountTimestamp(accountTimestampForUser(user.id)) ? user : null;
 }

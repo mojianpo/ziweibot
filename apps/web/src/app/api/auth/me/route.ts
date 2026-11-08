@@ -1,7 +1,7 @@
 /**
  * 当前登录状态 —— GET
  *
- * 未登录返回 { loggedIn:false }；已登录带邮箱与账户额度摘要。
+ * 未登录返回 { loggedIn:false }；已登录带账号标识与账户额度摘要。
  */
 
 import { accountQuota } from '@/lib/account';
@@ -17,7 +17,7 @@ export async function GET() {
   return Response.json(
     {
       loggedIn: true,
-      email: user.email,
+      account: user.email,
       quota: accountQuota(user.id),
     },
     { headers: { 'cache-control': 'no-store' } },

@@ -1,5 +1,7 @@
 import ErrorAlert from '@/components/ErrorAlert';
+import { redirect } from 'next/navigation';
 import HomeChat from '@/components/HomeChat';
+import { currentUser } from '@/lib/session';
 import { describeProviderEnv, readProviderEnv } from '@ziwei/ask';
 
 export const dynamic = 'force-dynamic';
@@ -18,6 +20,7 @@ export default async function HomePage({
 }: {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
+  if (!await currentUser()) redirect('/account');
   const sp = await searchParams;
   const errorKey = typeof sp.error === 'string' ? sp.error : '';
   const errorText = ERROR_TEXT[errorKey];

@@ -18,10 +18,10 @@ function ZiweiMark({ className }: { className?: string }) {
 export function SiteHeader() {
   return (
     <header className="sticky top-0 z-40 border-b border-line bg-surface/90 backdrop-blur pt-[env(safe-area-inset-top)] print:hidden">
-      <div className="mx-auto flex h-14 w-full max-w-6xl items-center justify-between px-5 sm:px-8">
+      <div className="mx-auto flex min-h-14 w-full max-w-6xl flex-wrap items-center gap-y-1 px-5 py-2 sm:h-14 sm:flex-nowrap sm:px-8 sm:py-0">
         <Link
           href="/"
-          className="group flex shrink-0 items-center gap-2 rounded-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zhu"
+          className="group flex min-h-11 shrink-0 items-center gap-2 rounded-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zhu sm:min-h-0"
         >
           <ZiweiMark className="h-[18px] w-[18px] shrink-0 text-zhu drop-shadow-[0_0_8px_rgba(10,113,148,0.28)] transition-transform duration-300 group-hover:rotate-12" />
           <span className="whitespace-nowrap font-sans text-[15px] font-semibold tracking-[0.16em] text-ink">

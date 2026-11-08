@@ -21,7 +21,7 @@ import {
   type AskTurn,
 } from '@ziwei/ask';
 import { providerFromUserConfig, readUserProvider } from '@/app/ai-provider';
-import { requestIp, reserveFor, type QuotaSubject } from '@/lib/askAccess';
+import { reserveFor } from '@/lib/askAccess';
 import { currentUser } from '@/lib/session';
 import { packEntry } from '@/lib/trafficPacks';
 
@@ -63,6 +63,8 @@ function parseTurns(raw: string): AskTurn[] {
 }
 
 export async function POST(request: Request) {
+  const user = await currentUser();
+  if (!user) return sseError('请先登录后使用追问。', 401);
   const formData = await request.formData();
   const question = str(formData, 'question').trim();
   const year = Number(str(formData, 'year'));
@@ -91,13 +93,9 @@ export async function POST(request: Request) {
   const userProvider = providerFromUserConfig(userCfg);
   let refund: (() => void) | null = null;
   if (!userProvider) {
-    // 有登录态就按账户扣（先免费日额 → 再流量包余额），否则按 IP 扣
-    const user = await currentUser();
-    const subject: QuotaSubject = user
-      ? { kind: 'user', userId: user.id }
-      : { kind: 'ip', ip: await requestIp() };
-    const r = reserveFor(subject);
-    if (!r.ok) return sseQuotaExceeded(r.limit, Boolean(user));
+    // 登录后按账户扣（先免费日额 → 再流量包余额）
+    const r = reserveFor({ kind: 'user', userId: user.id });
+    if (!r.ok) return sseQuotaExceeded(r.limit, true);
     refund = r.refund;
   }
 
@@ -247,9 +245,9 @@ export async function POST(request: Request) {
 }
 
 /** 请求还没进入流之前的硬错误：也用同样的 SSE 格式回，前端只有一条解析路径 */
-function sseError(message: string): Response {
+function sseError(message: string, status = 200): Response {
   return new Response(`data: ${JSON.stringify({ type: 'error', message })}\n\n`, {
-    status: 200,
+    status,
     headers: {
       'content-type': 'text/event-stream; charset=utf-8',
       'cache-control': 'no-cache, no-transform',
@@ -261,7 +259,7 @@ function sseError(message: string): Response {
  * 额度用尽：专用事件（不是普通 error），带 QUOTA_EXCEEDED 码 + 流量包入口，
  * 前端据此弹「额度墙」而不是一句干巴巴的报错。
  *
- * loggedIn 告诉前端「买包前要不要先登录」—— 未登录时购买入口应引导登录。
+ * loggedIn 告诉前端额度归属；业务接口只接受已登录账号。
  */
 function sseQuotaExceeded(limit: number, loggedIn: boolean): Response {
   return new Response(

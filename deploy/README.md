@@ -255,9 +255,6 @@ docker compose -f deploy/docker-compose.yml down
 | `ZIWEI_ASK_MODEL` | 空 | 模型名 |
 | `ZIWEI_ASK_MAX_TOKENS` | `8000` | 单次输出上限 |
 | `ZIWEI_STATE_DIR` | `/app/state` | 运行状态目录（账户 / 会话 / 订单 / 每日额度计数）—— 必须挂 volume，否则重建容器丢账户与流量包余额 |
-| `ZIWEI_RESEND_API_KEY` | 空 | 验证码发信通道（Resend）。**空 = 不发信**：开发环境回 debugCode，生产环境报「邮件服务未配置」 |
-| `ZIWEI_RESEND_FROM` | `紫微BOT <onboarding@resend.dev>` | 发信人地址（Resend 需已验证域名） |
-| `ZIWEI_OTP_DEBUG` | 空 | `1` = 强制调试模式（回 debugCode，不发信）—— 生产别开 |
 | `ZIWEI_ASK_DAILY_LIMIT` | `3` | 每日免费追问次数（按账户 / 按 IP） |
 
 > 追问 provider 留空 = 不接任何模型 API。排盘与 13 维解读（数据集检索）

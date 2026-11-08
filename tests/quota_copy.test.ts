@@ -1,9 +1,9 @@
 /**
- * 额度文案回归 —— 额度墙口径与 /account 标签。
+ * 额度文案回归 —— 额度墙口径与账号期限。
  *
  * 关注两件事：
  *  1. 额度墙文案按登录态区分：已登录「按账户」、未登录「按 IP」（中英都要对）
- *  2. /account 的 `<dt>` 用独立标签字段，不靠 split(' ')[0] 猜
+ *  2. /account 显示 KEY 文件期限，不显示额度和订单
  */
 
 import assert from 'node:assert/strict';
@@ -33,21 +33,21 @@ export async function suite(t: Tester): Promise<void> {
       assert.doesNotMatch(copy.wallBody(3, 'ip'), /账户|account/);
     });
 
-    t.test(`${lang} /account 有独立标签字段且非空`, () => {
-      assert.ok(copy.accountFreeLabel.length > 0);
-      assert.ok(copy.accountPackLabel.length > 0);
+    t.test(`${lang} /account 有独立期限标签`, () => {
+      assert.ok(copy.accountExpiryLabel.length > 0);
     });
 
-    t.test(`${lang} /account 标签是独立字段，不是完整文案截断`, () => {
-      const full = copy.accountFree(2, 3);
-      assert.notEqual(copy.accountFreeLabel, full);
-      assert.ok(copy.accountFreeLabel.length < full.length);
-      assert.notEqual(copy.accountPackLabel, copy.accountPack(2));
-      assert.ok(copy.accountPackLabel.length < copy.accountPack(2).length);
+    t.test(`${lang} 永久 KEY 显示永不过期`, () => {
+      assert.match(copy.accountExpiry(-1, Date.now()), lang === 'zh' ? /永不过期/ : /Never expires/);
+    });
+
+    t.test(`${lang} 普通 KEY 显示七天有效期内的剩余天数`, () => {
+      const now = 1_800_000_000_000;
+      assert.match(copy.accountExpiry(now - 1.5 * 86_400_000, now), /6/);
     });
 
     t.test(`${lang} 日额 -1 显示不限次`, () => {
-      const text = `${copy.statusBuiltin('AI', -1)} ${copy.activeBuiltin('AI', -1)} ${copy.accountFree(-1, -1)}`;
+      const text = `${copy.statusBuiltin('AI', -1)} ${copy.activeBuiltin('AI', -1)}`;
       assert.doesNotMatch(text, /每天 -1|per day.*-1|剩余 -1/);
       assert.match(text, lang === 'zh' ? /不限次/ : /unlimited/i);
     });

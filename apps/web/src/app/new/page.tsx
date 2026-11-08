@@ -1,10 +1,13 @@
 import Link from 'next/link';
+import { redirect } from 'next/navigation';
 import BirthForm from '@/components/BirthForm';
 import { getService } from '@/lib/service';
+import { currentUser } from '@/lib/session';
 
 export const dynamic = 'force-dynamic';
 
-export default function NewProfilePage() {
+export default async function NewProfilePage() {
+  if (!await currentUser()) redirect('/account');
   const years = getService().coverage().indexedYears;
 
   return (

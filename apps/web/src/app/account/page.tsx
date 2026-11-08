@@ -1,13 +1,10 @@
 'use client';
 
 /**
- * 「我的额度」页 —— /account
+ * 「我的账号」页 —— /account
  *
- * 未登录：登录表单（邮箱验证码）。
- * 已登录：邮箱、今日免费剩余、流量包余额、最近 stub 订单，可退出登录。
- *
- * 额度口径与 /api/quota 一致：免费按 userId 每天 N 次（UTC 日），
- * 流量包余额是购买获得的追问次数，两者分开。
+ * 未登录：KEY 登录表单。
+ * 已登录：账号标识与期限，可退出登录。
  */
 
 import { useCallback, useEffect, useState } from 'react';
@@ -15,45 +12,35 @@ import LoginPanel from '@/components/LoginPanel';
 import { QUOTA_COPY } from '@/lib/quotaCopy';
 import { useLang } from '@/lib/lang';
 
-interface QuotaInfo {
-  limit: number;
-  used: number;
-  remaining: number;
-  packBalance: number;
-}
-
-interface OrderItem {
-  id: string;
-  packId: string;
-  asks: number;
-  priceCny: number;
-  priceUsd: number;
-  createdAt: string;
-  status: 'stub' | 'pending' | 'paid' | 'closed';
-}
-
 export default function AccountPage() {
   const [lang] = useLang();
   const copy = QUOTA_COPY[lang];
-  const [state, setState] = useState<'loading' | 'out' | 'in'>('loading');
-  const [email, setEmail] = useState('');
-  const [quota, setQuota] = useState<QuotaInfo | null>(null);
-  const [orders, setOrders] = useState<OrderItem[]>([]);
+  const [state, setState] = useState<'loading' | 'out' | 'in' | 'error'>('loading');
+  const [loggingOut, setLoggingOut] = useState(false);
+  const [logoutError, setLogoutError] = useState(false);
+  const [account, setAccount] = useState('');
+  const [timestamp, setTimestamp] = useState<number | null>(null);
+  const [now, setNow] = useState(0);
+
+  const DISCLAIMER = '本工具仅供文化兴趣与学习之用，不构成任何医疗、法律、投资或人生决策建议。';
+
 
   const load = useCallback(async () => {
+    setState('loading');
     try {
       const res = await fetch('/api/account/quota', { cache: 'no-store' });
-      if (!res.ok) {
+      if (res.status === 401) {
         setState('out');
         return;
       }
-      const j = (await res.json()) as { email: string; quota: QuotaInfo; orders: OrderItem[] };
-      setEmail(j.email);
-      setQuota(j.quota);
-      setOrders(j.orders ?? []);
+      if (!res.ok) throw new Error('Account request failed');
+      const j = (await res.json()) as { account: string; timestamp: number; now: number };
+      setAccount(j.account);
+      setTimestamp(j.timestamp);
+      setNow(j.now);
       setState('in');
     } catch {
-      setState('out');
+      setState('error');
     }
   }, []);
 
@@ -62,91 +49,86 @@ export default function AccountPage() {
   }, [load]);
 
   async function logout() {
-    await fetch('/api/auth/logout', { method: 'POST' }).catch(() => null);
-    setState('out');
-    setQuota(null);
-    setOrders([]);
+    setLoggingOut(true);
+    setLogoutError(false);
+    try {
+      const res = await fetch('/api/auth/logout', { method: 'POST' });
+      if (!res.ok) throw new Error('Logout failed');
+      setState('out');
+      setTimestamp(null);
+      window.dispatchEvent(new Event('ziwei:auth-changed'));
+    } catch {
+      setLogoutError(true);
+    } finally {
+      setLoggingOut(false);
+    }
   }
 
   return (
-    <div className="mx-auto w-full max-w-3xl px-5 py-12 sm:px-8 sm:py-16">
-      <header className="mb-8">
-        <p className="mb-2 text-2xs tracking-[0.3em] text-ink-3">ACCOUNT</p>
-        <h1 className="text-3xl font-semibold tracking-[0.12em] text-ink">{copy.accountTitle}</h1>
+    <div className="mx-auto flex w-full max-w-3xl flex-1 flex-col px-5 pb-[max(3rem,env(safe-area-inset-bottom))] pt-10 sm:px-8 sm:pt-16">
+      <header className="mb-8 sm:mb-10">
+        <h1 className="text-[2rem] font-semibold leading-tight tracking-[0.06em] text-ink sm:text-4xl">{copy.accountTitle}</h1>
+        <div className="mt-4 h-px w-12 bg-zhu" aria-hidden="true" />
+        <p className="" > <b>温馨提示：</b> {DISCLAIMER} </p>
       </header>
 
+
       {state === 'loading' && (
-        <p className="text-sm text-ink-2" role="status">
-          …
-        </p>
+        <div className="panel w-full max-w-xl px-5 py-7 sm:px-8" role="status">
+          <p className="text-sm text-ink-2">{lang === 'zh' ? '正在加载账号…' : 'Loading account…'}</p>
+        </div>
+      )}
+
+      {state === 'error' && (
+        <div className="panel w-full max-w-xl px-5 py-7 sm:px-8" role="alert">
+          <p className="text-base font-medium text-ink">{lang === 'zh' ? '暂时无法获取账号信息' : 'Account information is unavailable'}</p>
+          <p className="mt-2 text-sm leading-relaxed text-ink-2">{lang === 'zh' ? '请检查网络后重试。' : 'Check your connection and try again.'}</p>
+          <button type="button" onClick={() => void load()} className="mt-5 inline-flex min-h-11 items-center justify-center rounded-lg bg-zhu px-5 text-sm font-medium text-white transition-colors hover:bg-zhu-deep focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zhu">
+            {lang === 'zh' ? '重新加载' : 'Try again'}
+          </button>
+        </div>
       )}
 
       {state === 'out' && (
-        <div className="max-w-md">
-          <LoginPanel onSuccess={() => void load()} />
+        <div className="w-full max-w-xl">
+          <LoginPanel onSuccess={() => {
+            window.dispatchEvent(new Event('ziwei:auth-changed'));
+            void load();
+          }} />
         </div>
       )}
 
-      {state === 'in' && quota && (
-        <div className="space-y-8">
-          <section className="rounded-xl border border-line bg-surface-2 px-5 py-4">
-            <dl className="space-y-2 text-sm">
-              <div className="flex flex-wrap gap-x-3">
-                <dt className="text-ink-2">{copy.accountEmail}</dt>
-                <dd className="text-ink">{email}</dd>
+      {state === 'in' && timestamp !== null && (
+        <section className="panel w-full max-w-xl overflow-hidden">
+          <div className="px-5 py-6 sm:px-8 sm:py-8">
+            <p className="text-sm font-medium text-zhu">{lang === 'zh' ? '已登录' : 'Signed in'}</p>
+            <dl className="mt-6 space-y-5 text-sm sm:mt-8">
+              <div className="grid gap-1.5 border-b border-lineSoft pb-5 sm:grid-cols-[7rem_minmax(0,1fr)] sm:items-baseline sm:gap-4">
+                <dt className="text-ink-2">{copy.accountKey}</dt>
+                <dd className="min-w-0 break-all font-medium text-ink">{account}</dd>
               </div>
-              <div className="flex flex-wrap gap-x-3">
-                <dt className="text-ink-2">{copy.accountFreeLabel}</dt>
-                <dd className="text-ink">
-                  {copy.accountFree(quota.remaining, quota.limit)}
-                </dd>
-              </div>
-              <div className="flex flex-wrap gap-x-3">
-                <dt className="text-ink-2">{copy.accountPackLabel}</dt>
-                <dd className="text-ink">{copy.accountPack(quota.packBalance)}</dd>
+              <div className="grid gap-1.5 sm:grid-cols-[7rem_minmax(0,1fr)] sm:items-baseline sm:gap-4">
+                <dt className="text-ink-2">{copy.accountExpiryLabel}</dt>
+                <dd className="font-medium text-ink">{copy.accountExpiry(timestamp, now)}</dd>
               </div>
             </dl>
+          </div>
+          <div className="border-t border-line bg-surface-2/60 px-5 py-4 sm:px-8">
             <button
               type="button"
-              onClick={logout}
-              className="mt-4 inline-flex min-h-9 items-center rounded-lg border border-line bg-surface px-3 py-1.5 text-xs text-ink-2 transition-colors hover:text-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zhu"
+              onClick={() => void logout()}
+              disabled={loggingOut}
+              className="inline-flex min-h-11 w-full items-center justify-center rounded-lg border border-line bg-surface px-5 text-sm text-ink-2 transition-colors hover:border-zhu/40 hover:text-ink disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zhu sm:w-auto"
             >
-              {copy.logout}
+              {loggingOut ? (lang === 'zh' ? '退出中…' : 'Signing out…') : copy.logout}
             </button>
-          </section>
-
-          <section>
-            <h2 className="mb-3 text-base tracking-[0.2em] text-ink">{copy.accountOrders}</h2>
-            {orders.length === 0 ? (
-              <p className="text-sm text-ink-2">{copy.accountNoOrders}</p>
-            ) : (
-              <ul className="space-y-2">
-                {orders.map((o) => (
-                  <li
-                    key={o.id}
-                    className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-lineSoft bg-surface-2 px-3 py-2 text-xs text-ink-2"
-                  >
-                    <span>
-                      {copy.accountOrderItem(
-                        o.asks,
-                        new Date(o.createdAt).toLocaleString('zh-CN', {
-                          month: 'numeric',
-                          day: 'numeric',
-                          hour: '2-digit',
-                          minute: '2-digit',
-                        }),
-                      )}
-                    </span>
-                    <span className="text-ink-3">
-                      {copy.orderStatus(o.status)} · ¥{o.priceCny} / ${o.priceUsd.toFixed(2)}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </section>
-        </div>
+            {logoutError && <p className="mt-3 text-sm text-danger" role="alert">{lang === 'zh' ? '退出失败，请重试。' : 'Could not sign out. Please try again.'}</p>}
+          </div>
+        </section>
       )}
+
+
+
     </div>
   );
 }

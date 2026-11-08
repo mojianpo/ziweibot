@@ -6,6 +6,7 @@
  */
 
 import { createAnthropicProvider, createEchoProvider, createOpenAICompatibleProvider } from '@ziwei/ask';
+import { currentUser } from '@/lib/session';
 
 export const dynamic = 'force-dynamic';
 
@@ -15,6 +16,9 @@ function str(formData: FormData, key: string): string {
 }
 
 export async function POST(request: Request) {
+  if (!await currentUser()) {
+    return Response.json({ ok: false, error: 'NOT_LOGGED_IN' }, { status: 401 });
+  }
   const formData = await request.formData();
   const kind = str(formData, 'kind').trim();
   const apiKey = str(formData, 'key').trim();

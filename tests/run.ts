@@ -30,6 +30,7 @@ const SUITE_FILES = [
   'tests/service.test.ts',
   'tests/ask_quota.test.ts',
   'tests/account.test.ts',
+  'tests/key_auth.test.ts',
   'tests/quota_copy.test.ts',
 ];
 
