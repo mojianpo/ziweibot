@@ -46,10 +46,10 @@ export async function suite(t: Tester): Promise<void> {
       assert.match(copy.accountExpiry(now - 1.5 * 86_400_000, now), /6/);
     });
 
-    t.test(`${lang} 日额 -1 显示不限次`, () => {
+    t.test(`${lang} 日额 -1 显示不限量`, () => {
       const text = `${copy.statusBuiltin('AI', -1)} ${copy.activeBuiltin('AI', -1)}`;
       assert.doesNotMatch(text, /每天 -1|per day.*-1|剩余 -1/);
-      assert.match(text, lang === 'zh' ? /不限次/ : /unlimited/i);
+      assert.match(text, lang === 'zh' ? /不限量/ : /unlimited/i);
     });
   }
 }

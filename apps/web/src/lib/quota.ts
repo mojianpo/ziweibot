@@ -1,14 +1,14 @@
 /**
  * 追问额度的**纯逻辑**（无 IO、无服务端依赖，客户端也能 import）。
  *
- * 口径：内置 AI 的免费追问 **每天限 DAILY_LIMIT 次**，按 **UTC 日**切
+ * 口径：内置 AI 的免费追问默认不限次；配置每日额度时按 **UTC 日**切
  * （`day` 串是 `YYYY-MM-DD` 的 UTC 日期；00:00 UTC 刷新）。
  * 归属键由调用方给：未登录按 IP、已登录按 userId（见 lib/quotaStore.ts）。
  * 用户自备 Key 不走这套额度（不限量）。
  */
 
-/** 默认每日免费追问次数 */
-export const DAILY_LIMIT = 3;
+/** 默认不限次；显式配置正数时才启用每日额度 */
+export const DAILY_LIMIT = -1;
 
 /** 环境变量 ZIWEI_ASK_DAILY_LIMIT → 每日次数；-1 不限次，其他非法值回落默认 */
 export function resolveDailyLimit(raw?: string): number {
@@ -45,7 +45,7 @@ export function bumpQuota(
   store: QuotaStore,
   day: string,
   key: string,
-  limit = DAILY_LIMIT,
+  limit: number,
 ): { store: QuotaStore; remaining: number } | null {
   const used = store[day]?.[key] ?? 0;
   if (used >= limit) return null;

@@ -77,7 +77,9 @@ export const suite = async (t: Tester): Promise<void> => {
     assert.equal(getSessionUser(undefined), null);
   });
 
-  await t.test('账户额度：先扣免费日额，再用流量包余额', () => {
+  const previousLimit = process.env.ZIWEI_ASK_DAILY_LIMIT;
+  process.env.ZIWEI_ASK_DAILY_LIMIT = '3';
+  await t.test('显式设为每天 3 次时：先扣免费日额，再用流量包余额', () => {
     reset();
     const user = ensureUser('q@example.com');
 
@@ -131,11 +133,13 @@ export const suite = async (t: Tester): Promise<void> => {
     refundUserAsk(user.id, 'pack');
     assert.equal(getUserById(user.id)?.packBalance, 1);
   });
+  if (previousLimit === undefined) delete process.env.ZIWEI_ASK_DAILY_LIMIT;
+  else process.env.ZIWEI_ASK_DAILY_LIMIT = previousLimit;
 
-  await t.test('日额 -1 时登录用户不限次，且不扣流量包', () => {
+  await t.test('未设置日额时登录用户不限量，且不扣流量包', () => {
     reset();
     const oldLimit = process.env.ZIWEI_ASK_DAILY_LIMIT;
-    process.env.ZIWEI_ASK_DAILY_LIMIT = '-1';
+    delete process.env.ZIWEI_ASK_DAILY_LIMIT;
     try {
       const user = ensureUser('unlimited@example.com');
       addPackBalance(user.id, 2);
@@ -206,17 +210,24 @@ export const suite = async (t: Tester): Promise<void> => {
     assert.equal(getOrder(order.id)?.status, 'paid');
   });
 
-  await t.test('用户额度与 IP 额度分开计数', async () => {
+  await t.test('显式设为每天 3 次时，用户额度与 IP 额度分开计数', async () => {
     reset();
-    const { reserveFor } = await import('../apps/web/src/lib/askAccess');
-    const user = ensureUser('sep@example.com');
+    const oldLimit = process.env.ZIWEI_ASK_DAILY_LIMIT;
+    process.env.ZIWEI_ASK_DAILY_LIMIT = '3';
+    try {
+      const { reserveFor } = await import('../apps/web/src/lib/askAccess');
+      const user = ensureUser('sep@example.com');
 
-    // 用户的免费额度用完
-    for (let i = 0; i < 3; i++) reserveFor({ kind: 'user', userId: user.id });
-    assert.equal(reserveFor({ kind: 'user', userId: user.id }).ok, false);
+      // 用户的免费额度用完
+      for (let i = 0; i < 3; i++) reserveFor({ kind: 'user', userId: user.id });
+      assert.equal(reserveFor({ kind: 'user', userId: user.id }).ok, false);
 
-    // 同 IP 的访客额度不受影响
-    const r = reserveFor({ kind: 'ip', ip: '203.0.113.9' });
-    assert.equal(r.ok, true);
+      // 同 IP 的访客额度不受影响
+      const r = reserveFor({ kind: 'ip', ip: '203.0.113.9' });
+      assert.equal(r.ok, true);
+    } finally {
+      if (oldLimit === undefined) delete process.env.ZIWEI_ASK_DAILY_LIMIT;
+      else process.env.ZIWEI_ASK_DAILY_LIMIT = oldLimit;
+    }
   });
 };

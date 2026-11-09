@@ -96,10 +96,10 @@ export interface QuotaCopy {
 }
 
 const ZH: QuotaCopy = {
-  dailyNote: (n) => n === -1 ? '（本站免费提供 · 不限次）' : `（本站免费提供 · 每天 ${n} 次）`,
+  dailyNote: (n) => n === -1 ? '（本站免费提供 · 不限量）' : `（本站免费提供 · 每天 ${n} 次）`,
   statusBuiltin: (model, n) =>
     n === -1 || n >= 1000
-      ? `当前 AI：${model}（本站免费提供 · 不限次）`
+      ? `当前 AI：${model}（本站免费提供 · 不限量）`
       : `当前 AI：${model}（本站免费提供 · 每天 ${n} 次）`,
   statusVip: (model, n) =>
     n > 0
@@ -108,7 +108,7 @@ const ZH: QuotaCopy = {
   statusUser: (model) => `当前 AI：${model}（你的 Key · 不限量）`,
   statusHint: '—— 右上角 ⚙ 可换成自己的 Key。',
   statusHintUser: '—— 右上角 ⚙ 可更换或测试。',
-  activeBuiltin: (model, n) => n === -1 ? `当前 AI：${model}（本站免费提供 · 不限次）` : `当前 AI：${model}（本站免费提供 · 每天 ${n} 次）`,
+  activeBuiltin: (model, n) => n === -1 ? `当前 AI：${model}（本站免费提供 · 不限量）` : `当前 AI：${model}（本站免费提供 · 每天 ${n} 次）`,
   activeUser: (model) => `当前 AI：${model}（你的 Key · 不限量）`,
   wallTitle: '今天的免费追问额度用完了',
   wallBody: (n, scope) =>

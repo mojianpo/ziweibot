@@ -28,7 +28,7 @@ import {
  * 调 `refund()` 把同一次还回去 —— 所以「失败不扣次」。
  */
 
-/** 每日上限（默认 3，env 可覆盖） */
+/** 每日上限（默认不限量，env 可覆盖） */
 export function dailyLimit(): number {
   return resolveDailyLimit(process.env.ZIWEI_ASK_DAILY_LIMIT);
 }

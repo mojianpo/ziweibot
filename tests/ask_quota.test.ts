@@ -2,7 +2,7 @@
  * 追问额度（第一期）—— 纯逻辑回归。
  *
  * 覆盖三件事：
- *  1. 每日上限默认 3，env 覆盖生效，非法值回落默认
+ *  1. 默认不限量，env 可显式设置每日上限，非法值回落默认
  *  2. 计数口径：成功 3 次后第 4 次被墙；失败退还后还能再问（失败不扣次）
  *  3. 流量包占位套餐齐全，checkout 入口存在
  *
@@ -35,7 +35,7 @@ const IP = '203.0.113.7';
 /** 模拟一次「成功提问」：占一次额度 */
 function ask(
   store: QuotaStore,
-  limit = DAILY_LIMIT,
+  limit = 3,
 ): { store: QuotaStore; remaining: number } | null {
   const r = bumpQuota(store, DAY, IP, limit);
   return r ? { store: r.store, remaining: r.remaining } : null;
@@ -49,10 +49,10 @@ function refund(store: QuotaStore): QuotaStore {
 }
 
 export const suite = async (t: Tester): Promise<void> => {
-  await t.test('默认每日上限是 3', () => {
-    assert.equal(DAILY_LIMIT, 3);
-    assert.equal(resolveDailyLimit(undefined), 3);
-    assert.equal(resolveDailyLimit(''), 3);
+  await t.test('默认免费追问不限量', () => {
+    assert.equal(DAILY_LIMIT, -1);
+    assert.equal(resolveDailyLimit(undefined), -1);
+    assert.equal(resolveDailyLimit(''), -1);
   });
 
   await t.test('VIP：名单解析（逗号/换行分隔、大小写、去空）', () => {
@@ -111,10 +111,10 @@ export const suite = async (t: Tester): Promise<void> => {
     let store: QuotaStore = {};
     for (let i = 0; i < 3; i++) store = ask(store)!.store;
     // 另一个 IP 不受影响
-    const other = bumpQuota(store, DAY, '198.51.100.1', DAILY_LIMIT);
+    const other = bumpQuota(store, DAY, '198.51.100.1', 3);
     assert.ok(other, '另一个 IP 应当独立计数');
     // 换一天重置
-    const nextDay = bumpQuota(store, '2026-11-05', IP, DAILY_LIMIT);
+    const nextDay = bumpQuota(store, '2026-11-05', IP, 3);
     assert.ok(nextDay, '次日应当重置');
     assert.equal(nextDay!.remaining, 2);
   });
