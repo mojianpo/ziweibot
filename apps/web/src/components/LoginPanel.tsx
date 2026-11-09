@@ -71,8 +71,8 @@ export default function LoginPanel({
       {!compact && (
         <p className="mt-6 border-t border-lineSoft pt-5 text-sm leading-relaxed text-ink-2">
           {lang === 'zh'
-            ? '想获取登录账号 KEY？打开拼多多，搜索店铺「星图引擎」，或搜索「AI命格-紫微BOT娱乐KEY」；也可以直接点击商品链接下单。下单即可获取登录账号 KEY。'
-            : 'Need an account KEY? Open Pinduoduo and search for the store “星图引擎”, or search “紫微BOT” or “紫微bot”. You can also order through the product link. Place an order to get your account KEY.'}
+            ? '想获取登录账号 KEY？打开拼多多，搜索店铺「星图引擎」，或搜索商品「AI命格-紫微BOT学习交流电子资源包」；也可以直接点击<a href="https://mobile.yangkeduo.com/goods.html?ps=5sc4Vc3fjz">商品链接</a>下单。下单即可获取登录账号 KEY。'
+            : 'Need an account KEY? Open Pinduoduo and search for the store “星图引擎”, or search “AI命格-紫微BOT学习交流电子资源包” . You can also order through the product link. Place an order to get your account KEY.'}
         </p>
       )}
     </form>
