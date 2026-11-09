@@ -36,6 +36,9 @@ npm run data:compact -- --all  # 压成 compact 形态：1.5GB（替代 53GB raw
 npm run web:dev        # http://localhost:3000
 
 nohup npm run web:dev > web-dev.log 2>&1 & echo $!
+
+sudo ss -ltnp 'sport = :3000'
+
 ---
 
 ## API接口
