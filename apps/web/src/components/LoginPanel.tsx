@@ -70,9 +70,19 @@ export default function LoginPanel({
       {error && <p id="ziwei-login-error" className="mt-3 text-sm text-danger" role="alert">{copy.loginError}</p>}
       {!compact && (
         <p className="mt-6 border-t border-lineSoft pt-5 text-sm leading-relaxed text-ink-2">
-          {lang === 'zh'
-            ? '想获取登录账号 KEY？打开拼多多，搜索店铺「星图引擎」，或搜索商品「AI命格-紫微BOT学习交流电子资源包」；也可以直接点击<a href="https://mobile.yangkeduo.com/goods.html?ps=5sc4Vc3fjz">商品链接</a>下单。下单即可获取登录账号 KEY。'
-            : 'Need an account KEY? Open Pinduoduo and search for the store “星图引擎”, or search “AI命格-紫微BOT学习交流电子资源包” . You can also order through the product link. Place an order to get your account KEY.'}
+          {lang === 'zh' ? (
+            <>
+              想获取登录账号 KEY？打开拼多多，搜索店铺「星图引擎」，或搜索商品「AI命格-紫微BOT学习交流电子资源包」；也可以直接点击
+              <a href="https://mobile.yangkeduo.com/goods.html?ps=5sc4Vc3fjz" className="underline underline-offset-2 hover:text-zhu focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zhu">商品链接</a>
+              下单。下单即可获取登录账号 KEY。
+            </>
+          ) : (
+            <>
+              Need an account KEY? Open Pinduoduo and search for the store “星图引擎”, or search “AI命格-紫微BOT学习交流电子资源包”. You can also order through the{' '}
+              <a href="https://mobile.yangkeduo.com/goods.html?ps=5sc4Vc3fjz" className="underline underline-offset-2 hover:text-zhu focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zhu">product link</a>
+              . Place an order to get your account KEY.
+            </>
+          )}
         </p>
       )}
     </form>
