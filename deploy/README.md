@@ -256,7 +256,7 @@ docker compose -f deploy/docker-compose.yml down
 | `ZIWEI_ASK_MODEL` | 空 | 模型名 |
 | `ZIWEI_ASK_MAX_TOKENS` | `8000` | 单次输出上限 |
 | `ZIWEI_STATE_DIR` | `/app/state` | 运行状态目录（账户 / 会话 / 订单 / 每日额度计数）—— 必须挂 volume，否则重建容器丢账户与流量包余额 |
-| `ZIWEI_ASK_DAILY_LIMIT` | `3` | 每日免费追问次数（按账户 / 按 IP） |
+| `ZIWEI_ASK_DAILY_LIMIT` | `-1` | 免费追问不限次；设为正数时按账户 / 按 IP 限制每日次数 |
 
 创建账号时，向 `POST /ziweibot/api/account/create` 发送请求头 `API_KEY: <deploy/.env 中的 API_KEY>`。
 未配置时接口返回 503，密钥不匹配返回 401；成功时返回已替换 `{KEY}`、`{URL}` 的纯文本模板。
